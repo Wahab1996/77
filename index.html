@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>كشف حساب وتحليل</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      direction: rtl;
+      background: #f4f4f4;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    input, select {
+      padding: 5px;
+      margin: 5px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background: #444;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+    canvas {
+      margin-top: 30px;
+    }
+    #total {
+      font-size: 18px;
+      margin-top: 15px;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <h1>استخراج العمليات وتحليل كشف الحساب</h1>
+  <input type="file" id="pdfInput" accept=".pdf" />
+
+  <table id="transactionsTable">
+    <thead>
+      <tr>
+        <th>تاريخ العملية</th>
+        <th>تاريخ القيد</th>
+        <th>المبلغ</th>
+        <th>تفاصيل العملية</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div id="total">إجمالي المصروفات: 0</div>
+
+  <canvas id="chart" height="100"></canvas>
+
+  <h2>إضافة عملية يدوية</h2>
+  <form id="manualForm">
+    <input type="date" id="opDate" required />
+    <input type="date" id="postDate" required />
+    <input type="number" step="0.01" id="amount" placeholder="المبلغ" required />
+    <input type="text" id="desc" placeholder="تفاصيل العملية" required />
+    <button type="submit">إضافة</button>
+  </form>
+
+  <script>
+    const tableBody = document.querySelector("#transactionsTable tbody");
+    const totalDiv = document.getElementById("total");
+    const ctx = document.getElementById("chart").getContext("2d");
+    let chart;
+    const expenses = [];
+
+    function updateChart() {
+      const grouped = {};
+      expenses.forEach(item => {
+        const label = item.description;
+        grouped[label] = (grouped[label] || 0) + item.amount;
+      });
+
+      const labels = Object.keys(grouped);
+      const data = Object.values(grouped);
+
+      if (chart) chart.destroy();
+      chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'المصروفات حسب التصنيف',
+            data,
+            backgroundColor: 'rgba(75, 192, 192, 0.6)'
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+    }
+
+    function updateTotal() {
+      const sum = expenses.reduce((acc, item) => acc + item.amount, 0);
+      totalDiv.textContent = `إجمالي المصروفات: ${sum.toFixed(2)}`;
+    }
+
+    function addRow(opDate, postDate, amount, desc) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${opDate}</td>
+        <td>${postDate}</td>
+        <td>${amount.toFixed(2)}</td>
+        <td>${desc}</td>
+      `;
+      tableBody.appendChild(tr);
+      expenses.push({ date: opDate, amount: amount, description: desc });
+      updateTotal();
+      updateChart();
+    }
+
+    document.getElementById('pdfInput').addEventListener('change', async function (e) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = async function () {
+        const typedarray = new Uint8Array(this.result);
+        const pdf = await pdfjsLib.getDocument(typedarray).promise;
+        let fullText = '';
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const textContent = await page.getTextContent();
+          fullText += textContent.items.map(item => item.str).join('\n');
+        }
+
+        // تفريغ الجدول والبيانات
+        tableBody.innerHTML = '';
+        expenses.length = 0;
+
+        // استخراج العمليات (مبدئيًا)
+        const matches = [...fullText.matchAll(/(\d{2}-\d{2}-\d{4})\s+(\d{2}-\d{2}-\d{4})\s+(PLN|SAR|USD|CHF|TRY)\s*(-?[0-9,.\s]+)\s+([^\n]+)/g)];
+
+        matches.forEach(match => {
+          const opDate = match[1];
+          const postDate = match[2];
+          const amount = parseFloat(match[4].replace(/,/g, '').replace(/\s/g, ''));
+          const desc = match[5];
+          if (!isNaN(amount)) {
+            addRow(opDate, postDate, Math.abs(amount), desc);
+          }
+        });
+
+        if (matches.length === 0) {
+          alert("لم يتم التعرف على أي معاملات");
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    });
+
+    document.getElementById("manualForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const opDate = document.getElementById("opDate").value;
+      const postDate = document.getElementById("postDate").value;
+      const amount = parseFloat(document.getElementById("amount").value);
+      const desc = document.getElementById("desc").value;
+      if (opDate && postDate && !isNaN(amount) && desc) {
+        addRow(opDate, postDate, amount, desc);
+        this.reset();
+      }
+    });
+  </script>
+</body>
+</html>
