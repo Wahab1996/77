@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>ملخص استراتيجيات التداول اليومي</title>
+  <style>
+    :root {
+      --bg1: #0b1220;
+      --bg2: #111827;
+      --card: rgba(255,255,255,0.08);
+      --card-strong: rgba(255,255,255,0.10);
+      --border: rgba(255,255,255,0.12);
+      --text: #f8fafc;
+      --muted: #cbd5e1;
+      --blue: #60a5fa;
+      --green: #22c55e;
+      --gold: #f59e0b;
+      --red: #ef4444;
+      --shadow: 0 20px 60px rgba(0,0,0,0.35);
+      --radius: 24px;
+      --space: clamp(14px, 3vw, 22px);
+      --title: clamp(1.35rem, 4vw, 1.9rem);
+      --subtitle: clamp(1rem, 2.8vw, 1.1rem);
+      --body: clamp(1rem, 2.4vw, 1.04rem);
+      --small: clamp(.88rem, 2.2vw, .95rem);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(59,130,246,.24) 0%, transparent 25%),
+        radial-gradient(circle at bottom left, rgba(34,197,94,.16) 0%, transparent 22%),
+        linear-gradient(145deg, var(--bg1), var(--bg2));
+      line-height: 1.9;
+      padding: 18px;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      border-radius: 28px;
+      padding: clamp(20px, 5vw, 34px);
+      margin-bottom: 16px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(96,165,250,.14);
+      color: #dbeafe;
+      border: 1px solid rgba(96,165,250,.18);
+      font-size: var(--small);
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: var(--title);
+      line-height: 1.35;
+      font-weight: 900;
+      letter-spacing: -.3px;
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: var(--subtitle);
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: var(--space);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 1.08rem;
+      line-height: 1.5;
+      font-weight: 850;
+      color: #ffffff;
+    }
+
+    p {
+      margin: 0 0 12px;
+      color: #e5e7eb;
+      font-size: var(--body);
+    }
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+
+    ul {
+      margin: 0;
+      padding: 0 18px 0 0;
+    }
+
+    li {
+      margin: 0 0 10px;
+      color: #e5e7eb;
+      font-size: var(--body);
+    }
+
+    li:last-child {
+      margin-bottom: 0;
+    }
+
+    .note {
+      border-right: 4px solid var(--gold);
+      background: rgba(245,158,11,.10);
+    }
+
+    .danger {
+      border-right: 4px solid var(--red);
+      background: rgba(239,68,68,.08);
+    }
+
+    .success {
+      border-right: 4px solid var(--green);
+      background: rgba(34,197,94,.08);
+    }
+
+    .mini-title {
+      color: #bfdbfe;
+      font-size: .92rem;
+      margin-bottom: 8px;
+      font-weight: 800;
+    }
+
+    .footer {
+      margin-top: 14px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: .86rem;
+      padding: 4px 8px 10px;
+    }
+
+    @media (min-width: 700px) {
+      .grid.two {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="badge">ملخص واضح للجوال</div>
+      <h1>استراتيجيات التداول اليومي والأسهم الصغيرة</h1>
+      <p class="lead">
+        هذا الملخص يجمع لك الفكرة بشكل مرتب: هل الشركات الصغيرة أسهل؟ هل استراتيجية الدخول مع الافتتاح والخروج قبل الإغلاق ناجحة؟ وما هي البدائل العملية الأفضل في day trading؟
+      </p>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <h2>أولاً: هل السهم الرخيص أفضل من السهم الغالي؟</h2>
+        <p>
+          ليس بالضرورة. سعر السهم وحده لا يعني أن الفرصة أفضل. المهم فعليًا هو نسبة الحركة المئوية، والسيولة، والقيمة السوقية، ووجود سبب واضح للحركة.
+        </p>
+        <p>
+          السهم الذي سعره 1 دولار قد يتحرك بسرعة أكبر أحيانًا، لكن هذا غالبًا لأنه صغير القيمة السوقية أو ضعيف السيولة، وليس لأن السعر المنخفض بحد ذاته ميزة مستقلة.
+        </p>
+      </article>
+
+      <article class="card">
+        <h2>ثانيًا: أيهما عادة يتحرك أكثر خلال أيام؟</h2>
+        <p>
+          في الغالب، الأسهم الصغيرة أو منخفضة السعر تكون أكثر قابلية للحركات المئوية الكبيرة خلال أيام، خصوصًا إذا كان عليها خبر قوي أو زخم مرتفع.
+        </p>
+        <p>
+          لكن في المقابل، هذه الأسهم تكون أخطر أيضًا، لأن صعودها السريع قد يتحول إلى هبوط حاد، وقد يصعب الخروج منها بالسعر المطلوب بسبب ضعف السيولة والانزلاق السعري.
+        </p>
+      </article>
+
+      <article class="card danger">
+        <div class="mini-title">مهم جدًا</div>
+        <h2>هل سهل تصيد تذبذبات الشركات الصغيرة؟</h2>
+        <p>
+          ليس سهلًا كما يبدو. قراءة الشارت وحدها لا تكفي، لأن الأسهم الصغيرة قد تتحرك بعشوائية أو بسبب مضاربات سريعة، وقد يظهر لك اختراق جميل ثم ينهار خلال دقائق.
+        </p>
+        <p>
+          الأصعب ليس فقط اختيار السهم، بل التنفيذ نفسه: الدخول والخروج، السبريد، الانزلاق، وسرعة تغير الاتجاه، وكلها تؤثر على النتيجة الفعلية.
+        </p>
+      </article>
+
+      <article class="card note">
+        <div class="mini-title">عن الفكرة التي ذكرتها</div>
+        <h2>الشراء بعد افتتاح السوق والبيع قبل الإغلاق</h2>
+        <p>
+          هذه تعتبر من أساليب day trading، وقد تنجح أحيانًا، لكنها ليست ناجحة تلقائيًا لمجرد أنك قرأت الشارت. إذا لم تكن لديك قواعد واضحة للدخول والخروج ووقف الخسارة، فهي تصبح أقرب إلى المضاربة العشوائية.
+        </p>
+        <p>
+          فترة الافتتاح تحديدًا تكون سريعة جدًا ومليئة بالتذبذب، لذلك كثير من المتداولين يخسرون لأنهم يدخلون على أول اندفاع ثم ينعكس السعر عليهم بسرعة.
+        </p>
+      </article>
+    </section>
+
+    <section class="grid two" style="margin-top:14px;">
+      <article class="card success">
+        <div class="mini-title">متى تكون الفكرة معقولة؟</div>
+        <h2>شروط تجعل الصفقة اليومية أفضل</h2>
+        <ul>
+          <li>وجود خبر واضح أو محفز قوي على السهم.</li>
+          <li>حجم تداول مرتفع وسيولة جيدة وقت الدخول.</li>
+          <li>خطة دخول محددة وليست شعورًا عامًا.</li>
+          <li>وقف خسارة معروف مسبقًا.</li>
+          <li>هدف ربح واضح أو قاعدة خروج محددة.</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <div class="mini-title">متى تصبح خطيرة؟</div>
+        <h2>أخطاء شائعة</h2>
+        <ul>
+          <li>مطاردة السهم بعد أن ارتفع أصلًا بقوة.</li>
+          <li>الدخول في سهم صغير بلا سيولة كافية.</li>
+          <li>عدم وضع وقف خسارة.</li>
+          <li>تكبير حجم الصفقة بسرعة.</li>
+          <li>الاعتماد على شكل الشمعة فقط دون حجم تداول أو سياق.</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="grid" style="margin-top:14px;">
+      <article class="card">
+        <h2>استراتيجيات day trading بديلة أفضل</h2>
+        <p>
+          بدل الاعتماد فقط على فكرة “أدخل من الافتتاح وأبيع آخر اليوم”، توجد استراتيجيات أوضح وأسهل للاختبار، وبعضها أنسب للمبتدئ وأكثر انضباطًا.
+        </p>
+        <ul>
+          <li><strong>Opening Range Breakout:</strong> تنتظر أول نطاق زمني واضح ثم تدخل فقط عند اختراق حقيقي مدعوم بالحجم.</li>
+          <li><strong>Pullback مع الاتجاه:</strong> تنتظر السهم بعد الحركة الأولى حتى يتراجع قليلًا ثم تدخل مع استكمال الاتجاه.</li>
+          <li><strong>Momentum:</strong> تدخل مع الأسهم ذات الزخم القوي وحجم التداول المرتفع، لكنها تحتاج انضباطًا عاليًا.</li>
+          <li><strong>Mean Reversion:</strong> مناسبة أكثر عندما يكون السوق عرضيًا أو حين يبتعد السعر كثيرًا عن متوسطه ثم يبدأ بالعودة.</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h2>ما الأنسب للمبتدئ؟</h2>
+        <p>
+          غالبًا الأنسب للمبتدئ هو: Pullback مع الاتجاه أو Opening Range Breakout، لأن قواعدهما أوضح وأسهل من مطاردة أي سهم متحرك بشكل عشوائي.
+        </p>
+        <p>
+          أما السكالبينغ أو مطاردة الشركات الصغيرة مباشرة من أول دقيقة، فهي أصعب وتحتاج خبرة أسرع في التنفيذ والانضباط وإدارة المخاطر.
+        </p>
+      </article>
+
+      <article class="card note">
+        <div class="mini-title">الخلاصة العملية</div>
+        <h2>وش الأفضل لك كبداية؟</h2>
+        <p>
+          إذا كنت تريد بداية أهدأ وأكثر واقعية، فلا تجعل هدفك “أصطاد أي سهم صغير يطير”. الأفضل أن تبحث عن سهم عليه سبب واضح للحركة، وسيولة جيدة، وخطة تداول محددة مسبقًا.
+        </p>
+        <p>
+          النجاح في day trading لا يأتي من اسم الاستراتيجية فقط، بل من التكرار المنضبط، وتقليل الخسارة، ومعرفة متى لا تتداول من الأساس.
+        </p>
+      </article>
+    </section>
+
+    <div class="footer">
+      صفحة مهيأة للجوال، عربية RTL، وخفيفة ومريحة للقراءة.
+    </div>
+  </main>
+</body>
+</html>
