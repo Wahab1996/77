@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>حاسبة العوائد الاحترافية</title>
+  <style>
+    :root{
+      --bg1:#0b1020;
+      --bg2:#121a2f;
+      --card:rgba(255,255,255,.08);
+      --card-2:rgba(255,255,255,.06);
+      --border:rgba(255,255,255,.12);
+      --text:#f8fafc;
+      --muted:#cbd5e1;
+      --green:#22c55e;
+      --green2:#16a34a;
+      --red:#ef4444;
+      --blue:#3b82f6;
+      --gold:#f59e0b;
+      --shadow:0 18px 60px rgba(0,0,0,.35);
+      --radius:26px;
+    }
+
+    *{
+      box-sizing:border-box;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    html{
+      font-size:16px;
+    }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(59,130,246,.25) 0%, transparent 28%),
+        radial-gradient(circle at bottom left, rgba(34,197,94,.18) 0%, transparent 24%),
+        linear-gradient(145deg,var(--bg1),var(--bg2));
+      display:grid;
+      place-items:center;
+      padding:18px;
+    }
+
+    .app{
+      width:100%;
+      max-width:470px;
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      overflow:hidden;
+    }
+
+    .top{
+      padding:22px 20px 16px;
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:.82rem;
+      color:#dbeafe;
+      background:rgba(59,130,246,.16);
+      border:1px solid rgba(96,165,250,.22);
+      margin-bottom:12px;
+    }
+
+    h1{
+      margin:0 0 8px;
+      font-size:1.55rem;
+      font-weight:900;
+      letter-spacing:-.3px;
+    }
+
+    .sub{
+      margin:0;
+      color:var(--muted);
+      line-height:1.75;
+      font-size:.95rem;
+    }
+
+    .content{
+      padding:18px;
+    }
+
+    .grid{
+      display:grid;
+      gap:14px;
+    }
+
+    .field{
+      display:grid;
+      gap:8px;
+    }
+
+    label{
+      font-size:.93rem;
+      font-weight:700;
+      color:#e5e7eb;
+    }
+
+    input{
+      width:100%;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.07);
+      color:var(--text);
+      border-radius:18px;
+      padding:16px 14px;
+      font-size:16px;
+      outline:none;
+      transition:.2s ease;
+      appearance:none;
+      -webkit-appearance:none;
+    }
+
+    input::placeholder{
+      color:#94a3b8;
+    }
+
+    input:focus{
+      border-color:rgba(96,165,250,.8);
+      background:rgba(255,255,255,.10);
+      box-shadow:0 0 0 4px rgba(59,130,246,.16);
+    }
+
+    .actions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:8px;
+    }
+
+    button{
+      border:none;
+      border-radius:18px;
+      padding:15px 14px;
+      font-size:1rem;
+      font-weight:900;
+      cursor:pointer;
+      transition:transform .08s ease, opacity .2s ease, filter .2s ease;
+    }
+
+    button:active{
+      transform:scale(.985);
+    }
+
+    .btn-calc{
+      color:#fff;
+      background:linear-gradient(135deg,var(--green),var(--green2));
+      box-shadow:0 10px 24px rgba(34,197,94,.24);
+    }
+
+    .btn-reset{
+      color:#fff;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+    }
+
+    .error{
+      min-height:22px;
+      margin-top:10px;
+      text-align:center;
+      color:#fecaca;
+      font-size:.91rem;
+    }
+
+    .results{
+      display:grid;
+      gap:12px;
+      margin-top:18px;
+    }
+
+    .result-box{
+      background:var(--card-2);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:20px;
+      padding:14px;
+    }
+
+    .result-title{
+      margin:0 0 10px;
+      color:#cbd5e1;
+      font-size:.9rem;
+      font-weight:700;
+    }
+
+    .row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px 0;
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+
+    .row:last-child{
+      border-bottom:none;
+      padding-bottom:0;
+    }
+
+    .key{
+      color:#cbd5e1;
+      font-size:.93rem;
+    }
+
+    .val{
+      font-size:1rem;
+      font-weight:900;
+      text-align:left;
+      direction:ltr;
+    }
+
+    .big{
+      font-size:1.18rem;
+    }
+
+    .green{color:#86efac;}
+    .red{color:#fca5a5;}
+    .blue{color:#93c5fd;}
+    .gold{color:#fcd34d;}
+
+    .foot{
+      margin-top:12px;
+      text-align:center;
+      color:#94a3b8;
+      font-size:.83rem;
+      line-height:1.7;
+    }
+
+    @media (max-width:420px){
+      .actions{
+        grid-template-columns:1fr;
+      }
+
+      .top{
+        padding:20px 16px 14px;
+      }
+
+      .content{
+        padding:16px;
+      }
+
+      h1{
+        font-size:1.38rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="card">
+      <div class="top">
+        <div class="badge">حاسبة عوائد احترافية</div>
+        <h1>حساب الربح والإجمالي</h1>
+        <p class="sub">أدخل سعر الشراء وسعر البيع وقيمة المبلغ، وسيتم حساب الكمية والربح ونسبة العائد والإجمالي النهائي تلقائيًا.</p>
+      </div>
+
+      <div class="content">
+        <div class="grid">
+          <div class="field">
+            <label for="buyPrice">سعر الشراء</label>
+            <input id="buyPrice" type="text" inputmode="decimal" placeholder="مثال: 10.77" />
+          </div>
+
+          <div class="field">
+            <label for="sellPrice">سعر البيع</label>
+            <input id="sellPrice" type="text" inputmode="decimal" placeholder="مثال: 10.96" />
+          </div>
+
+          <div class="field">
+            <label for="capital">قيمة المبلغ</label>
+            <input id="capital" type="text" inputmode="decimal" placeholder="مثال: 500" />
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn-calc" onclick="calculateReturns()">احسب العوائد</button>
+          <button class="btn-reset" onclick="resetCalculator()">إعادة تعيين</button>
+        </div>
+
+        <div class="error" id="errorBox"></div>
+
+        <div class="results">
+          <div class="result-box">
+            <div class="result-title">بيانات الصفقة</div>
+
+            <div class="row">
+              <div class="key">الكمية المشتراة</div>
+              <div class="val blue" id="qtyValue">0.000000</div>
+            </div>
+
+            <div class="row">
+              <div class="key">إجمالي قيمة البيع</div>
+              <div class="val gold" id="grossValue">0.00</div>
+            </div>
+          </div>
+
+          <div class="result-box">
+            <div class="result-title">نتيجة العائد</div>
+
+            <div class="row">
+              <div class="key">الربح / الخسارة</div>
+              <div class="val big" id="profitValue">0.00</div>
+            </div>
+
+            <div class="row">
+              <div class="key">نسبة العائد</div>
+              <div class="val" id="roiValue">0.00%</div>
+            </div>
+
+            <div class="row">
+              <div class="key">الإجمالي النهائي</div>
+              <div class="val big" id="finalValue">0.00</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="foot">
+          تحسب هذه الحاسبة النتيجة بدون رسوم. ويمكن تطويرها لاحقًا لإضافة العمولة أو وقف الخسارة أو الهدف السعري.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const buyPriceEl = document.getElementById("buyPrice");
+    const sellPriceEl = document.getElementById("sellPrice");
+    const capitalEl = document.getElementById("capital");
+
+    const qtyValue = document.getElementById("qtyValue");
+    const grossValue = document.getElementById("grossValue");
+    const profitValue = document.getElementById("profitValue");
+    const roiValue = document.getElementById("roiValue");
+    const finalValue = document.getElementById("finalValue");
+    const errorBox = document.getElementById("errorBox");
+
+    function parseNum(v) {
+      return parseFloat(String(v).replace(/,/g, ".").trim());
+    }
+
+    function formatMoney(n) {
+      return Number(n).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function setProfitStyle(el, value) {
+      el.classList.remove("green", "red", "blue", "gold");
+      el.classList.add(value >= 0 ? "green" : "red");
+    }
+
+    function clearOutput() {
+      qtyValue.textContent = "0.000000";
+      grossValue.textContent = "0.00";
+      profitValue.textContent = "0.00";
+      roiValue.textContent = "0.00%";
+      finalValue.textContent = "0.00";
+
+      profitValue.className = "val big";
+      roiValue.className = "val";
+      finalValue.className = "val big";
+    }
+
+    function calculateReturns() {
+      const buyPrice = parseNum(buyPriceEl.value);
+      const sellPrice = parseNum(sellPriceEl.value);
+      const capital = parseNum(capitalEl.value);
+
+      if (isNaN(buyPrice) || isNaN(sellPrice) || isNaN(capital)) {
+        errorBox.textContent = "فضلاً أدخل جميع القيم بشكل صحيح.";
+        clearOutput();
+        return;
+      }
+
+      if (buyPrice <= 0 || capital <= 0) {
+        errorBox.textContent = "سعر الشراء وقيمة المبلغ يجب أن يكونا أكبر من صفر.";
+        clearOutput();
+        return;
+      }
+
+      if (sellPrice < 0) {
+        errorBox.textContent = "سعر البيع لا يمكن أن يكون سالبًا.";
+        clearOutput();
+        return;
+      }
+
+      const quantity = capital / buyPrice;
+      const grossSale = quantity * sellPrice;
+      const profit = grossSale - capital;
+      const roi = (profit / capital) * 100;
+      const finalTotal = capital + profit;
+
+      qtyValue.textContent = quantity.toFixed(6);
+      grossValue.textContent = formatMoney(grossSale);
+      profitValue.textContent = formatMoney(profit);
+      roiValue.textContent = roi.toFixed(2) + "%";
+      finalValue.textContent = formatMoney(finalTotal);
+
+      setProfitStyle(profitValue, profit);
+      setProfitStyle(roiValue, roi);
+      setProfitStyle(finalValue, profit);
+
+      errorBox.textContent = "";
+    }
+
+    function resetCalculator() {
+      buyPriceEl.value = "";
+      sellPriceEl.value = "";
+      capitalEl.value = "";
+      errorBox.textContent = "";
+      clearOutput();
+      buyPriceEl.focus();
+    }
+
+    [buyPriceEl, sellPriceEl, capitalEl].forEach((input, index, arr) => {
+      input.addEventListener("keydown", e => {
+        if (e.key === "Enter") {
+          if (index < arr.length - 1) {
+            arr[index + 1].focus();
+          } else {
+            calculateReturns();
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
