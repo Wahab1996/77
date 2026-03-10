@@ -2,186 +2,289 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>كشف حساب وتحليل</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>حاسبة الربح</title>
   <style>
+    :root {
+      --bg1: #0f172a;
+      --bg2: #111827;
+      --card: rgba(255,255,255,0.08);
+      --border: rgba(255,255,255,0.14);
+      --text: #f8fafc;
+      --muted: #cbd5e1;
+      --accent: #22c55e;
+      --accent2: #16a34a;
+      --danger: #ef4444;
+      --shadow: 0 20px 50px rgba(0,0,0,0.30);
+      --radius: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      font-size: 16px;
+    }
+
     body {
-      font-family: Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top right, #1d4ed8 0%, transparent 28%),
+        radial-gradient(circle at bottom left, #059669 0%, transparent 24%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      color: var(--text);
+      display: grid;
+      place-items: center;
       padding: 20px;
-      direction: rtl;
-      background: #f4f4f4;
     }
-    h1, h2 {
-      text-align: center;
-    }
-    input, select {
-      padding: 5px;
-      margin: 5px;
-    }
-    table {
+
+    .wrap {
       width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background: white;
+      max-width: 430px;
     }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
+
+    .card {
+      background: var(--card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .title {
+      margin: 0 0 8px;
+      font-size: 1.6rem;
+      font-weight: 800;
       text-align: center;
     }
-    th {
-      background: #444;
+
+    .subtitle {
+      margin: 0 0 22px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.98rem;
+      line-height: 1.7;
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 16px 14px;
+      font-size: 16px;
+      outline: none;
+      transition: 0.2s ease;
+    }
+
+    input::placeholder {
+      color: #94a3b8;
+    }
+
+    input:focus {
+      border-color: #60a5fa;
+      background: rgba(255,255,255,0.12);
+      box-shadow: 0 0 0 4px rgba(96,165,250,0.18);
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    button {
+      border: none;
+      border-radius: 16px;
+      padding: 15px 14px;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.08s ease, opacity 0.2s ease, background 0.2s ease;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .calc-btn {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
       color: white;
     }
-    tr:nth-child(even) {
-      background: #f9f9f9;
+
+    .reset-btn {
+      background: rgba(255,255,255,0.10);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.12);
     }
-    canvas {
-      margin-top: 30px;
+
+    .result {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.10);
+      display: grid;
+      gap: 10px;
     }
-    #total {
-      font-size: 18px;
-      margin-top: 15px;
-      font-weight: bold;
+
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .row span:first-child {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .value {
+      font-weight: 800;
+      font-size: 1.08rem;
+    }
+
+    .total {
+      color: #86efac;
+      font-size: 1.3rem;
+    }
+
+    .hint {
+      margin-top: 12px;
+      font-size: 0.88rem;
+      color: #cbd5e1;
       text-align: center;
+      line-height: 1.7;
+    }
+
+    .error {
+      color: #fecaca;
+      text-align: center;
+      margin-top: 12px;
+      font-size: 0.92rem;
+      min-height: 22px;
+    }
+
+    @media (max-width: 420px) {
+      .card {
+        padding: 18px;
+        border-radius: 20px;
+      }
+
+      .title {
+        font-size: 1.4rem;
+      }
+
+      .actions {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+  <div class="wrap">
+    <div class="card">
+      <h1 class="title">حاسبة الربح</h1>
+      <p class="subtitle">أدخل مبلغ الدخول ونسبة الربح، وسيتم حساب الربح والمجموع النهائي مباشرة.</p>
 
-  <h1>استخراج العمليات وتحليل كشف الحساب</h1>
-  <input type="file" id="pdfInput" accept=".pdf" />
+      <div class="field">
+        <label for="amount">قيمة الدخول بالدولار</label>
+        <input id="amount" type="text" inputmode="decimal" placeholder="مثال: 10.77" />
+      </div>
 
-  <table id="transactionsTable">
-    <thead>
-      <tr>
-        <th>تاريخ العملية</th>
-        <th>تاريخ القيد</th>
-        <th>المبلغ</th>
-        <th>تفاصيل العملية</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+      <div class="field">
+        <label for="profit">نسبة الربح %</label>
+        <input id="profit" type="text" inputmode="decimal" placeholder="مثال: 1.72" />
+      </div>
 
-  <div id="total">إجمالي المصروفات: 0</div>
+      <div class="actions">
+        <button class="calc-btn" onclick="calculate()">احسب الآن</button>
+        <button class="reset-btn" onclick="resetForm()">إعادة تعيين</button>
+      </div>
 
-  <canvas id="chart" height="100"></canvas>
+      <div class="error" id="error"></div>
 
-  <h2>إضافة عملية يدوية</h2>
-  <form id="manualForm">
-    <input type="date" id="opDate" required />
-    <input type="date" id="postDate" required />
-    <input type="number" step="0.01" id="amount" placeholder="المبلغ" required />
-    <input type="text" id="desc" placeholder="تفاصيل العملية" required />
-    <button type="submit">إضافة</button>
-  </form>
+      <div class="result">
+        <div class="row">
+          <span>قيمة الربح</span>
+          <span class="value" id="profitValue">0.00 $</span>
+        </div>
+        <div class="row">
+          <span>المجموع النهائي</span>
+          <span class="value total" id="totalValue">0.00 $</span>
+        </div>
+      </div>
+
+      <div class="hint">مثال: 10.77 مع ربح 1.72% = 10.96 دولار تقريبًا.</div>
+    </div>
+  </div>
 
   <script>
-    const tableBody = document.querySelector("#transactionsTable tbody");
-    const totalDiv = document.getElementById("total");
-    const ctx = document.getElementById("chart").getContext("2d");
-    let chart;
-    const expenses = [];
+    const amountInput = document.getElementById("amount");
+    const profitInput = document.getElementById("profit");
+    const profitValue = document.getElementById("profitValue");
+    const totalValue = document.getElementById("totalValue");
+    const errorBox = document.getElementById("error");
 
-    function updateChart() {
-      const grouped = {};
-      expenses.forEach(item => {
-        const label = item.description;
-        grouped[label] = (grouped[label] || 0) + item.amount;
-      });
-
-      const labels = Object.keys(grouped);
-      const data = Object.values(grouped);
-
-      if (chart) chart.destroy();
-      chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [{
-            label: 'المصروفات حسب التصنيف',
-            data,
-            backgroundColor: 'rgba(75, 192, 192, 0.6)'
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { display: false }
-          }
-        }
-      });
+    function normalizeNumber(value) {
+      return parseFloat(String(value).replace(/,/g, ".").trim());
     }
 
-    function updateTotal() {
-      const sum = expenses.reduce((acc, item) => acc + item.amount, 0);
-      totalDiv.textContent = `إجمالي المصروفات: ${sum.toFixed(2)}`;
+    function calculate() {
+      const amount = normalizeNumber(amountInput.value);
+      const profit = normalizeNumber(profitInput.value);
+
+      if (isNaN(amount) || isNaN(profit) || amount < 0) {
+        errorBox.textContent = "فضلاً أدخل أرقامًا صحيحة في الحقول.";
+        profitValue.textContent = "0.00 $";
+        totalValue.textContent = "0.00 $";
+        return;
+      }
+
+      const earned = amount * (profit / 100);
+      const total = amount + earned;
+
+      profitValue.textContent = earned.toFixed(2) + " $";
+      totalValue.textContent = total.toFixed(2) + " $";
+      errorBox.textContent = "";
     }
 
-    function addRow(opDate, postDate, amount, desc) {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${opDate}</td>
-        <td>${postDate}</td>
-        <td>${amount.toFixed(2)}</td>
-        <td>${desc}</td>
-      `;
-      tableBody.appendChild(tr);
-      expenses.push({ date: opDate, amount: amount, description: desc });
-      updateTotal();
-      updateChart();
+    function resetForm() {
+      amountInput.value = "";
+      profitInput.value = "";
+      profitValue.textContent = "0.00 $";
+      totalValue.textContent = "0.00 $";
+      errorBox.textContent = "";
+      amountInput.focus();
     }
 
-    document.getElementById('pdfInput').addEventListener('change', async function (e) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = async function () {
-        const typedarray = new Uint8Array(this.result);
-        const pdf = await pdfjsLib.getDocument(typedarray).promise;
-        let fullText = '';
-        for (let i = 1; i <= pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
-          const textContent = await page.getTextContent();
-          fullText += textContent.items.map(item => item.str).join('\n');
-        }
-
-        // تفريغ الجدول والبيانات
-        tableBody.innerHTML = '';
-        expenses.length = 0;
-
-        // استخراج العمليات (مبدئيًا)
-        const matches = [...fullText.matchAll(/(\d{2}-\d{2}-\d{4})\s+(\d{2}-\d{2}-\d{4})\s+(PLN|SAR|USD|CHF|TRY)\s*(-?[0-9,.\s]+)\s+([^\n]+)/g)];
-
-        matches.forEach(match => {
-          const opDate = match[1];
-          const postDate = match[2];
-          const amount = parseFloat(match[4].replace(/,/g, '').replace(/\s/g, ''));
-          const desc = match[5];
-          if (!isNaN(amount)) {
-            addRow(opDate, postDate, Math.abs(amount), desc);
-          }
-        });
-
-        if (matches.length === 0) {
-          alert("لم يتم التعرف على أي معاملات");
-        }
-      };
-      reader.readAsArrayBuffer(file);
+    amountInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") profitInput.focus();
     });
 
-    document.getElementById("manualForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-      const opDate = document.getElementById("opDate").value;
-      const postDate = document.getElementById("postDate").value;
-      const amount = parseFloat(document.getElementById("amount").value);
-      const desc = document.getElementById("desc").value;
-      if (opDate && postDate && !isNaN(amount) && desc) {
-        addRow(opDate, postDate, amount, desc);
-        this.reset();
-      }
+    profitInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") calculate();
     });
   </script>
 </body>
