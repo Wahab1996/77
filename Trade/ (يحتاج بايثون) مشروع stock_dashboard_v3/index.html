@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stock Dashboard V3</title>
+  <style>
+    :root{--bg:#091122;--bg2:#121d39;--panel:rgba(18,29,57,.88);--line:rgba(255,255,255,.08);--text:#eef3ff;--muted:#99a6ca;--green:#22c77a;--red:#ff637a;--blue:#5ea2ff;--amber:#ffb84d;--shadow:0 20px 40px rgba(0,0,0,.28);--radius:22px}
+    *{box-sizing:border-box} body{margin:0;font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:radial-gradient(circle at top right, rgba(94,162,255,.18), transparent 26%),radial-gradient(circle at left bottom, rgba(122,135,255,.12), transparent 22%),linear-gradient(180deg,var(--bg),var(--bg2));color:var(--text);min-height:100vh}
+    .shell{width:min(1360px,calc(100% - 28px));margin:22px auto 36px}.hero,.layout{display:grid;gap:18px}.hero{grid-template-columns:1.25fr .95fr;margin-bottom:18px}.layout{grid-template-columns:340px 1fr}.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);backdrop-filter:blur(14px);box-shadow:var(--shadow)}
+    .hero-card,.side,.content,.modal-box{padding:20px}.title-row,.toolbar,.row-between{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}h1{margin:0 0 8px;font-size:clamp(28px,3.2vw,42px)}h2{margin:0 0 10px;font-size:18px}p{margin:0;color:var(--muted);line-height:1.8}
+    .pill,.chip,.status{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border-radius:999px;border:1px solid var(--line);font-size:12px}.pill{background:rgba(34,199,122,.12);color:#c2f8dd}.dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+    .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.stat{padding:18px;border-radius:18px;background:rgba(255,255,255,.03);border:1px solid var(--line)}.stat .l{font-size:13px;color:var(--muted);margin-bottom:10px}.stat .v{font-size:28px;font-weight:800}.stat .s{font-size:13px;color:var(--muted);margin-top:6px}
+    .stack,.cards,.filters{display:grid;gap:12px}.cards{grid-template-columns:repeat(auto-fit,minmax(290px,1fr))}.field,.select,.textarea{width:100%;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);outline:none}.textarea{min-height:110px;resize:vertical}.field::placeholder,.textarea::placeholder{color:#8f9cc0}
+    button{border:0;cursor:pointer;border-radius:16px;padding:12px 15px;font:inherit;transition:.18s ease}.primary{background:linear-gradient(135deg,var(--blue),#7e8cff);color:#fff}.ghost{background:rgba(255,255,255,.05);color:var(--text);border:1px solid var(--line)}button:hover{transform:translateY(-1px)}
+    .actions,.toolbar-right{display:flex;gap:10px;flex-wrap:wrap}.actions{margin-top:20px}.card{padding:18px;border-radius:20px;border:1px solid var(--line);background:rgba(255,255,255,.035)}.ticker{font-size:24px;font-weight:800}.company{color:var(--muted);font-size:13px;margin-top:4px}.price{font-size:30px;font-weight:800}.price-row{display:flex;justify-content:space-between;gap:12px;align-items:flex-end;margin:16px 0}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{padding:10px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.04)}.metric .k{font-size:12px;color:var(--muted);margin-bottom:6px}.metric .v{font-size:15px;font-weight:700}.reason{margin-top:14px;line-height:1.8;color:#dbe4ff;font-size:14px;min-height:58px}
+    .watch{background:rgba(255,184,77,.12);color:#ffd99f}.entry{background:rgba(34,199,122,.13);color:#c5f8df}.confirmed{background:rgba(94,162,255,.14);color:#d6e8ff}.exit{background:rgba(255,99,122,.12);color:#ffc4ce}.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse}.table th,.table td{padding:13px 11px;text-align:right;border-bottom:1px solid var(--line);font-size:14px}.table th{color:var(--muted);background:rgba(255,255,255,.03)}
+    .modal{position:fixed;inset:0;background:rgba(3,7,18,.66);display:none;place-items:center;padding:16px}.modal.show{display:grid}.modal-box{width:min(760px,100%)}.modal-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}.full{grid-column:1 / -1}.notice{padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--muted);line-height:1.8}.ok{color:#c5f8df}.warn{color:#ffd99f}.danger{color:#ffc4ce}
+    @media (max-width:1100px){.hero,.layout{grid-template-columns:1fr}} @media (max-width:700px){.stats,.metrics,.modal-grid{grid-template-columns:1fr}.shell{width:min(100% - 18px,1360px)}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div class="panel hero-card">
+        <div class="title-row">
+          <div>
+            <h1>لوحة توصيات الأسهم V3</h1>
+            <p>نسخة Backend كاملة بمفتاح API مخفي داخل الخادم، مزامنة مركزية، وتنبيهات Telegram وDiscord عند تغيّر حالة السهم.</p>
+          </div>
+          <div class="pill"><span class="dot"></span> Backend محفوظ وآمن نسبيًا</div>
+        </div>
+        <div class="actions">
+          <button class="primary" onclick="syncAll()">مزامنة الآن</button>
+          <button class="ghost" onclick="openModal()">+ إضافة سهم</button>
+          <button class="ghost" onclick="openConfig()">الإعدادات</button>
+        </div>
+      </div>
+      <div class="panel content">
+        <div class="stats">
+          <div class="stat"><div class="l">عدد الأسهم</div><div class="v" id="statTotal">0</div><div class="s">قائمة المتابعة</div></div>
+          <div class="stat"><div class="l">إشارات مفعلة</div><div class="v" id="statSignals">0</div><div class="s">دخول محتمل أو مؤكد</div></div>
+          <div class="stat"><div class="l">متوسط R/R</div><div class="v" id="statRR">0.00</div><div class="s">بناءً على خططك</div></div>
+          <div class="stat"><div class="l">حالة الاتصال</div><div class="v" id="statConfig" style="font-size:18px">--</div><div class="s">API والتنبيهات</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="layout">
+      <aside class="panel side">
+        <div class="stack">
+          <div>
+            <h2>بحث وفلترة</h2>
+            <div class="stack">
+              <input id="searchInput" class="field" placeholder="ابحث بالرمز أو الشركة" />
+              <select id="marketFilter" class="select"><option value="all">كل الأسواق</option><option value="US">السوق الأمريكي</option><option value="SA">السوق السعودي</option></select>
+            </div>
+          </div>
+          <div>
+            <h2>الحالة</h2>
+            <div class="filters">
+              <button class="ghost filter active" data-filter="all">الكل</button>
+              <button class="ghost filter" data-filter="مراقبة">مراقبة</button>
+              <button class="ghost filter" data-filter="دخول محتمل">دخول محتمل</button>
+              <button class="ghost filter" data-filter="دخول مؤكد">دخول مؤكد</button>
+              <button class="ghost filter" data-filter="خروج / جني ربح">خروج / جني ربح</button>
+              <button class="ghost filter" data-filter="وقف/خروج">وقف/خروج</button>
+            </div>
+          </div>
+          <div>
+            <h2>حالة النظام</h2>
+            <div class="notice" id="systemNotice">جاهز.</div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="panel content">
+        <div class="toolbar">
+          <div><h2>البطاقات</h2><div class="notice">هذه البطاقات تقرأ البيانات من الخادم مباشرة، وليس من Local Storage فقط.</div></div>
+          <div class="toolbar-right"><span class="chip">تنبيهات عند تغيّر الحالة</span><span class="chip">API مخفي عن الواجهة</span></div>
+        </div>
+        <div class="cards" id="cards"></div>
+        <div class="table-wrap" style="margin-top:14px">
+          <table class="table">
+            <thead><tr><th>الرمز</th><th>الشركة</th><th>السوق</th><th>السعر</th><th>اليومي</th><th>الأسبوعي</th><th>الدخول</th><th>الهدف</th><th>الوقف</th><th>الحالة</th><th>إجراء</th></tr></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </main>
+    </section>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="panel modal-box">
+      <div class="row-between"><div><h2 id="modalTitle">إضافة سهم</h2><div class="notice">هذه البيانات تُحفَظ في الخادم المحلي.</div></div><button class="ghost" onclick="closeModal()">إغلاق</button></div>
+      <form id="stockForm" class="modal-grid">
+        <input type="hidden" id="editingId" />
+        <input id="symbol" class="field" placeholder="الرمز" required />
+        <input id="company" class="field" placeholder="اسم الشركة" required />
+        <select id="market" class="select"><option value="US">السوق الأمريكي</option><option value="SA">السوق السعودي</option></select>
+        <input id="api_symbol" class="field" placeholder="رمز API مثل AAPL أو 2222.SR" required />
+        <input id="entry" class="field" type="number" step="0.01" placeholder="الدخول" required />
+        <input id="target" class="field" type="number" step="0.01" placeholder="الهدف" required />
+        <input id="stop" class="field" type="number" step="0.01" placeholder="الوقف" required />
+        <input id="confidence" class="field" type="number" placeholder="الثقة %" />
+        <textarea id="reason" class="textarea full" placeholder="سبب الفكرة" required></textarea>
+        <button class="primary full" type="submit">حفظ</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="configModal">
+    <div class="panel modal-box">
+      <div class="row-between"><div><h2>إعدادات الخادم</h2><div class="notice">هذه الإعدادات تُحفَظ في ملف .env داخل المشروع.</div></div><button class="ghost" onclick="closeConfig()">إغلاق</button></div>
+      <form id="configForm" class="modal-grid">
+        <input id="ALPHA_VANTAGE_API_KEY" class="field full" placeholder="Alpha Vantage API Key" />
+        <input id="TELEGRAM_BOT_TOKEN" class="field full" placeholder="Telegram Bot Token" />
+        <input id="TELEGRAM_CHAT_ID" class="field full" placeholder="Telegram Chat ID" />
+        <input id="DISCORD_WEBHOOK_URL" class="field full" placeholder="Discord Webhook URL" />
+        <button class="primary full" type="submit">حفظ الإعدادات</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let stocks = [];
+    let activeFilter = 'all';
+    const cards = document.getElementById('cards');
+    const tableBody = document.getElementById('tableBody');
+    const notice = document.getElementById('systemNotice');
+
+    document.getElementById('searchInput').addEventListener('input', render);
+    document.getElementById('marketFilter').addEventListener('change', render);
+    document.querySelectorAll('.filter').forEach(btn => btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.filter;
+      render();
+    }));
+
+    document.getElementById('stockForm').addEventListener('submit', saveStock);
+    document.getElementById('configForm').addEventListener('submit', saveConfig);
+
+    function setNotice(msg, tone='ok'){ notice.className = 'notice ' + tone; notice.textContent = msg; }
+    function rr(item){ const risk=Math.abs(item.entry-item.stop), reward=Math.abs(item.target-item.entry); return risk ? (reward/risk).toFixed(2) : '0.00'; }
+    function pct(v){ return v==null ? '--' : `${v >= 0 ? '+' : ''}${Number(v).toFixed(2)}%`; }
+    function price(v){ return v==null ? '--' : Number(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+    function statusClass(s){ if(s==='مراقبة') return 'watch'; if(s==='دخول محتمل') return 'entry'; if(s==='دخول مؤكد') return 'confirmed'; return 'exit'; }
+
+    function filtered(){
+      const q = document.getElementById('searchInput').value.trim().toLowerCase();
+      const market = document.getElementById('marketFilter').value;
+      return stocks.filter(x => (activeFilter === 'all' || x.status === activeFilter) && (market === 'all' || x.market === market) && (!q || x.symbol.toLowerCase().includes(q) || x.company.toLowerCase().includes(q)));
+    }
+
+    function render(){
+      const data = filtered();
+      cards.innerHTML = data.map(item => `<div class="card"><div class="row-between"><div><div class="ticker">${item.symbol}</div><div class="company">${item.company}</div></div><span class="status ${statusClass(item.status)}">${item.status}</span></div><div class="price-row"><div><div class="price">${price(item.price)}</div><div class="company">${item.market} · ${item.api_symbol}</div></div><span class="chip">${pct(item.daily_change)}</span></div><div class="metrics"><div class="metric"><div class="k">الدخول</div><div class="v">${price(item.entry)}</div></div><div class="metric"><div class="k">الهدف</div><div class="v">${price(item.target)}</div></div><div class="metric"><div class="k">الوقف</div><div class="v">${price(item.stop)}</div></div></div><div class="reason">${item.reason}</div><div class="actions" style="margin-top:14px"><span class="chip">أسبوعي: ${pct(item.weekly_change)}</span><span class="chip">R/R: ${rr(item)}</span><span class="chip">ثقة: ${item.confidence || 0}%</span></div><div class="actions" style="margin-top:12px"><button class="ghost" onclick="editStock(${item.id})">تعديل</button><button class="ghost" onclick="deleteStock(${item.id})">حذف</button></div></div>`).join('');
+      tableBody.innerHTML = data.map(item => `<tr><td><strong>${item.symbol}</strong></td><td>${item.company}</td><td>${item.market}</td><td>${price(item.price)}</td><td>${pct(item.daily_change)}</td><td>${pct(item.weekly_change)}</td><td>${price(item.entry)}</td><td>${price(item.target)}</td><td>${price(item.stop)}</td><td><span class="status ${statusClass(item.status)}">${item.status}</span></td><td><button class="ghost" onclick="editStock(${item.id})">تعديل</button></td></tr>`).join('');
+      document.getElementById('statTotal').textContent = stocks.length;
+      document.getElementById('statSignals').textContent = stocks.filter(x => x.status === 'دخول محتمل' || x.status === 'دخول مؤكد').length;
+      document.getElementById('statRR').textContent = stocks.length ? (stocks.reduce((a,b)=>a+Number(rr(b)),0)/stocks.length).toFixed(2) : '0.00';
+    }
+
+    async function loadConfig(){
+      const r = await fetch('/api/config');
+      const data = await r.json();
+      document.getElementById('statConfig').textContent = `Alpha: ${data.alpha_configured ? 'جاهز' : 'ناقص'} · Telegram: ${data.telegram_configured ? 'جاهز' : 'ناقص'} · Discord: ${data.discord_configured ? 'جاهز' : 'ناقص'}`;
+    }
+
+    async function loadStocks(){
+      const r = await fetch('/api/stocks');
+      stocks = await r.json();
+      render();
+    }
+
+    async function saveStock(e){
+      e.preventDefault();
+      const id = document.getElementById('editingId').value;
+      const payload = {
+        symbol: document.getElementById('symbol').value,
+        company: document.getElementById('company').value,
+        market: document.getElementById('market').value,
+        api_symbol: document.getElementById('api_symbol').value,
+        entry: document.getElementById('entry').value,
+        target: document.getElementById('target').value,
+        stop: document.getElementById('stop').value,
+        confidence: document.getElementById('confidence').value,
+        reason: document.getElementById('reason').value,
+      };
+      const url = id ? `/api/stocks/${id}` : '/api/stocks';
+      const method = id ? 'PUT' : 'POST';
+      await fetch(url, {method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
+      closeModal();
+      await loadStocks();
+      setNotice('تم حفظ السهم.', 'ok');
+    }
+
+    async function deleteStock(id){
+      if(!confirm('حذف السهم؟')) return;
+      await fetch(`/api/stocks/${id}`, {method:'DELETE'});
+      await loadStocks();
+      setNotice('تم حذف السهم.', 'warn');
+    }
+
+    function openModal(){ document.getElementById('modalTitle').textContent='إضافة سهم'; document.getElementById('editingId').value=''; document.getElementById('stockForm').reset(); document.getElementById('modal').classList.add('show'); }
+    function closeModal(){ document.getElementById('modal').classList.remove('show'); }
+    function openConfig(){ document.getElementById('configModal').classList.add('show'); }
+    function closeConfig(){ document.getElementById('configModal').classList.remove('show'); }
+
+    function editStock(id){
+      const item = stocks.find(x => x.id === id);
+      if(!item) return;
+      document.getElementById('modalTitle').textContent='تعديل سهم';
+      document.getElementById('editingId').value=item.id;
+      document.getElementById('symbol').value=item.symbol;
+      document.getElementById('company').value=item.company;
+      document.getElementById('market').value=item.market;
+      document.getElementById('api_symbol').value=item.api_symbol;
+      document.getElementById('entry').value=item.entry;
+      document.getElementById('target').value=item.target;
+      document.getElementById('stop').value=item.stop;
+      document.getElementById('confidence').value=item.confidence || '';
+      document.getElementById('reason').value=item.reason;
+      document.getElementById('modal').classList.add('show');
+    }
+
+    async function saveConfig(e){
+      e.preventDefault();
+      const payload = {
+        ALPHA_VANTAGE_API_KEY: document.getElementById('ALPHA_VANTAGE_API_KEY').value,
+        TELEGRAM_BOT_TOKEN: document.getElementById('TELEGRAM_BOT_TOKEN').value,
+        TELEGRAM_CHAT_ID: document.getElementById('TELEGRAM_CHAT_ID').value,
+        DISCORD_WEBHOOK_URL: document.getElementById('DISCORD_WEBHOOK_URL').value,
+      };
+      await fetch('/api/config', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
+      closeConfig();
+      await loadConfig();
+      setNotice('تم حفظ الإعدادات في الخادم المحلي.', 'ok');
+    }
+
+    async function syncAll(){
+      setNotice('جاري المزامنة...', 'warn');
+      const r = await fetch('/api/sync', {method:'POST'});
+      const data = await r.json();
+      if(!data.ok){ setNotice('فشلت المزامنة.', 'danger'); return; }
+      await loadStocks();
+      setNotice(`تم تحديث ${data.count} سهم.`, 'ok');
+    }
+
+    document.getElementById('modal').addEventListener('click', e => { if(e.target.id === 'modal') closeModal(); });
+    document.getElementById('configModal').addEventListener('click', e => { if(e.target.id === 'configModal') closeConfig(); });
+
+    loadConfig();
+    loadStocks();
+  </script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "symbol": "AAPL",
+    "company": "Apple Inc.",
+    "market": "US",
+    "api_symbol": "AAPL",
+    "entry": 213.8,
+    "target": 221.0,
+    "stop": 209.9,
+    "confidence": 74,
+    "reason": "اختراق محتمل مع زخم يومي إيجابي.",
+    "price": null,
+    "daily_change": null,
+    "weekly_change": null,
+    "status": "مراقبة",
+    "updated_at": "--",
+    "last_alert_status": ""
+  }
+]
