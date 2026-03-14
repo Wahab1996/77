@@ -1,0 +1,41 @@
+اول شي عدل اسم الملف الي اسمه (xx.env.example) الى هذا الاسم (.env.example) 
+
+نعم، بنيت لك النسخة الثالثة بشكل **أقوى**: Backend محلي بـ Flask، واجهة عربية احترافية، مفتاح API محفوظ في الخادم بدل HTML، وتنبيهات Telegram وDiscord عند تغيّر حالة السهم.   
+كما أن المشروع صار يفصل بين الواجهة والبيانات والإعدادات، وهذا هو الشكل الصحيح إذا كنت تريد لوحة “خاصة بك” وقابلة للتطوير. 
+
+## ما الذي أضفته
+
+المشروع الآن فيه `app.py` للخادم، وواجهة `index.html`، وملف `stocks.json` لتخزين قائمة الأسهم، و`.env.example` للإعدادات السرية، و`requirements.txt` للتشغيل.   
+الخادم يجلب البيانات من Alpha Vantage، ويقيّم حالة السهم تلقائيًا، ثم يرسل تنبيهًا إذا تغيّرت الحالة إلى Telegram أو Discord. 
+
+## لماذا هذه النسخة أفضل
+
+إخفاء المفتاح في الخادم أفضل من وضعه في المتصفح، لأن Telegram Bot API وDiscord Webhooks وAlpha Vantage كلها تعتمد على مفاتيح أو عناوين حساسة لا يُفترض كشفها في الواجهة.[1][2][3]
+كما أن Telegram Bot API يدعم إرسال الرسائل عبر `sendMessage` بواجهة HTTP، وDiscord Webhooks تقبل إرسال JSON مباشرة إلى رابط الـ webhook، وهذا ما بُني عليه منطق التنبيهات في الخادم.[2][1]
+
+## الملفات
+
+هذه أهم الملفات الجاهزة:  
+- `app.py` لتشغيل الخادم والمنطق الرئيسي.   
+- `index.html` للواجهة الاحترافية.   
+- `README.md` فيه خطوات التشغيل السريعة.   
+- `.env.example` لتعبئة المفاتيح. 
+
+## التشغيل
+
+شغّل المشروع بهذه الخطوات كما هو موضح في README: ثبّت المتطلبات من `requirements.txt` ثم شغّل `python app.py` وافتح `http://127.0.0.1:5000`.   
+بعدها من داخل الواجهة أدخل Alpha Vantage API Key وTelegram Bot Token وTelegram Chat ID وDiscord Webhook URL، وسيُحفظ ذلك في ملف `.env` داخل المشروع. 
+
+## التحميل
+
+تقدر تبدأ من هذه الملفات مباشرة:  
+- [app.py](sandbox:/home/user/stock_dashboard_v3/app.py)   
+- [index.html](sandbox:/home/user/stock_dashboard_v3/templates/index.html)   
+- [README.md](sandbox:/home/user/stock_dashboard_v3/README.md)   
+- [.env.example](sandbox:/home/user/stock_dashboard_v3/.env.example)   
+- [requirements.txt](sandbox:/home/user/stock_dashboard_v3/requirements.txt) 
+
+هل تريد الخطوة التالية تكون:  
+1. أضيف تسجيل دخول باسم مستخدم وكلمة مرور،  
+2. أو أربطه بتليجرام فعليًا خطوة بخطوة،  
+3. أو أحوّله إلى نسخة تستضيفها على Render أو Railway؟
