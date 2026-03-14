@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة توصيات الأسهم</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --bg-soft: #121933;
+      --panel: rgba(18, 25, 51, 0.86);
+      --panel-2: #172041;
+      --text: #eef3ff;
+      --muted: #95a2c6;
+      --line: rgba(255,255,255,.08);
+      --green: #23c483;
+      --red: #ff5d73;
+      --amber: #ffb648;
+      --blue: #5ea1ff;
+      --violet: #8b7cff;
+      --shadow: 0 18px 40px rgba(0,0,0,.28);
+      --radius: 22px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(94,161,255,.18), transparent 25%),
+        radial-gradient(circle at left bottom, rgba(139,124,255,.16), transparent 22%),
+        linear-gradient(180deg, #08101f 0%, #0e1530 100%);
+      min-height: 100vh;
+    }
+    .shell { width: min(1320px, calc(100% - 32px)); margin: 24px auto 40px; }
+    .hero { display: grid; grid-template-columns: 1.35fr .95fr; gap: 18px; margin-bottom: 18px; }
+    .hero-card, .card, .table-wrap, .modal-box { background: var(--panel); backdrop-filter: blur(14px); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .hero-card { padding: 26px; position: relative; overflow: hidden; }
+    .hero-card::after { content: ""; position: absolute; inset: auto -80px -80px auto; width: 200px; height: 200px; background: radial-gradient(circle, rgba(94,161,255,.22), transparent 70%); pointer-events: none; }
+    .title-row { display: flex; justify-content: space-between; gap: 18px; align-items: start; margin-bottom: 16px; }
+    h1 { margin: 0 0 8px; font-size: clamp(26px, 3.1vw, 38px); line-height: 1.1; letter-spacing: -.4px; }
+    p { margin: 0; color: var(--muted); line-height: 1.8; }
+    .badge-live { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 999px; background: rgba(35,196,131,.12); color: #b9f6da; border: 1px solid rgba(35,196,131,.2); font-size: 13px; white-space: nowrap; }
+    .badge-live .dot { width: 9px; height: 9px; background: var(--green); border-radius: 50%; box-shadow: 0 0 0 5px rgba(35,196,131,.14); animation: pulse 1.6s infinite; }
+    @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 70% { transform: scale(1.2); opacity: .7; } 100% { transform: scale(1); opacity: 1; } }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 22px; }
+    button, .ghost { border: 0; border-radius: 16px; padding: 13px 18px; font: inherit; cursor: pointer; transition: .18s ease; }
+    .primary { background: linear-gradient(135deg, var(--blue), #7b8cff); color: white; box-shadow: 0 10px 24px rgba(94,161,255,.25); }
+    .primary:hover { transform: translateY(-1px); }
+    .ghost { background: rgba(255,255,255,.05); color: var(--text); border: 1px solid var(--line); }
+    .stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; height: 100%; }
+    .stat { padding: 18px; border-radius: 20px; background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); border: 1px solid var(--line); }
+    .stat .label { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+    .stat .value { font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+    .stat .sub { font-size: 13px; color: var(--muted); }
+    .layout { display: grid; grid-template-columns: 310px 1fr; gap: 18px; }
+    .sidebar, .main { display: grid; gap: 18px; align-content: start; }
+    .card { padding: 18px; }
+    .card h2 { margin: 0 0 12px; font-size: 18px; }
+    .field, .select, .search { width: 100%; border-radius: 14px; border: 1px solid var(--line); background: rgba(255,255,255,.04); color: var(--text); padding: 13px 14px; outline: none; font: inherit; }
+    .field::placeholder, .search::placeholder { color: #8e9ab8; }
+    .stack { display: grid; gap: 12px; }
+    .filters { display: grid; gap: 10px; }
+    .filter-btn { background: rgba(255,255,255,.04); border: 1px solid var(--line); color: var(--text); text-align: right; padding: 12px 14px; border-radius: 14px; }
+    .filter-btn.active, .filter-btn:hover { background: rgba(94,161,255,.14); border-color: rgba(94,161,255,.26); }
+    .mini-list { display: grid; gap: 10px; }
+    .mini-item { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 16px; background: rgba(255,255,255,.04); border: 1px solid var(--line); }
+    .mini-item small { color: var(--muted); display: block; margin-top: 4px; }
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .signal-card { padding: 18px; border-radius: 22px; background: linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.025)); border: 1px solid var(--line); position: relative; overflow: hidden; }
+    .signal-card::before { content: ""; position: absolute; top: -60px; left: -60px; width: 140px; height: 140px; background: radial-gradient(circle, rgba(255,255,255,.08), transparent 70%); pointer-events: none; }
+    .signal-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    .ticker { font-size: 24px; font-weight: 800; letter-spacing: .6px; }
+    .company { color: var(--muted); font-size: 13px; margin-top: 4px; }
+    .status { padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+    .status.watch { background: rgba(255,182,72,.12); color: #ffd79a; }
+    .status.entry { background: rgba(35,196,131,.14); color: #baf4db; }
+    .status.confirmed { background: rgba(94,161,255,.15); color: #d3e5ff; }
+    .status.exit { background: rgba(255,93,115,.12); color: #ffc2cb; }
+    .price-row { display: flex; justify-content: space-between; align-items: end; gap: 12px; margin-bottom: 16px; }
+    .price { font-size: 30px; font-weight: 800; }
+    .change { font-size: 14px; font-weight: 700; padding: 8px 10px; border-radius: 12px; }
+    .up { background: rgba(35,196,131,.14); color: #b7f8da; }
+    .down { background: rgba(255,93,115,.12); color: #ffbfc9; }
+    .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+    .metric { padding: 10px; border-radius: 14px; background: rgba(255,255,255,.04); border: 1px solid var(--line); }
+    .metric .k { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .metric .v { font-size: 15px; font-weight: 700; }
+    .reason { color: #d7def4; line-height: 1.8; font-size: 14px; min-height: 54px; }
+    .actions-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+    .chip { padding: 9px 11px; border-radius: 12px; background: rgba(255,255,255,.05); border: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+    .table-wrap { padding: 12px; overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; overflow: hidden; }
+    th, td { padding: 15px 14px; text-align: right; border-bottom: 1px solid var(--line); font-size: 14px; }
+    th { color: var(--muted); font-weight: 600; background: rgba(255,255,255,.03); }
+    tr:hover td { background: rgba(255,255,255,.03); }
+    .toolbar { display: flex; justify-content: space-between; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+    .toolbar-right { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .muted { color: var(--muted); font-size: 13px; }
+    .modal { position: fixed; inset: 0; background: rgba(4,7,18,.62); display: none; place-items: center; padding: 18px; z-index: 20; }
+    .modal.show { display: grid; }
+    .modal-box { width: min(720px, 100%); padding: 20px; }
+    .modal-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 14px; }
+    .modal-grid .full { grid-column: 1 / -1; }
+    .row-between { display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+    .footer-note { margin-top: 14px; font-size: 12px; color: var(--muted); }
+    @media (max-width: 1100px) { .hero, .layout { grid-template-columns: 1fr; } .sidebar { order: 2; } }
+    @media (max-width: 700px) { .stat-grid, .modal-grid, .metrics { grid-template-columns: 1fr; } .shell { width: min(100% - 18px, 1320px); margin-top: 10px; } .hero-card, .card { padding: 16px; } th, td { padding: 12px 10px; font-size: 13px; } .title-row { flex-direction: column; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div class="hero-card">
+        <div class="title-row">
+          <div>
+            <h1>لوحة توصيات الأسهم الشخصية</h1>
+            <p>واجهة احترافية لمتابعة قائمة الأسهم الخاصة بك، مع توصية مختصرة، أهداف، وقف خسارة، نسبة العائد إلى المخاطرة، وآخر تحديث في مكان واحد.</p>
+          </div>
+          <div class="badge-live"><span class="dot"></span> تحديث محلي محفوظ على جهازك</div>
+        </div>
+        <div class="hero-actions">
+          <button class="primary" id="openModalBtn">+ إضافة توصية جديدة</button>
+          <button class="ghost" id="resetBtn">إعادة البيانات التجريبية</button>
+          <button class="ghost" id="exportBtn">تصدير البيانات JSON</button>
+        </div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat"><div class="label">إجمالي الأسهم المراقبة</div><div class="value" id="statTotal">0</div><div class="sub">قائمة خاصة بك قابلة للتعديل</div></div>
+        <div class="stat"><div class="label">إشارات دخول محتملة</div><div class="value" id="statEntry">0</div><div class="sub">مناسبة للفرز السريع</div></div>
+        <div class="stat"><div class="label">متوسط العائد/المخاطرة</div><div class="value" id="statRR">0.0</div><div class="sub">مبني على العناصر الحالية</div></div>
+        <div class="stat"><div class="label">آخر تحديث</div><div class="value" id="statUpdated" style="font-size:20px">--</div><div class="sub">يُحدَّث عند أي تعديل</div></div>
+      </div>
+    </section>
+    <section class="layout">
+      <aside class="sidebar">
+        <div class="card">
+          <h2>بحث سريع</h2>
+          <div class="stack">
+            <input id="searchInput" class="search" type="text" placeholder="ابحث بالرمز أو اسم الشركة" />
+            <select id="marketFilter" class="select">
+              <option value="all">كل الأسواق</option>
+              <option value="US">السوق الأمريكي</option>
+              <option value="SA">السوق السعودي</option>
+            </select>
+          </div>
+        </div>
+        <div class="card">
+          <h2>فلترة الحالة</h2>
+          <div class="filters">
+            <button class="filter-btn active" data-filter="all">الكل</button>
+            <button class="filter-btn" data-filter="مراقبة">مراقبة</button>
+            <button class="filter-btn" data-filter="دخول محتمل">دخول محتمل</button>
+            <button class="filter-btn" data-filter="دخول مؤكد">دخول مؤكد</button>
+            <button class="filter-btn" data-filter="خروج / جني ربح">خروج / جني ربح</button>
+          </div>
+        </div>
+        <div class="card">
+          <h2>خطة القرار</h2>
+          <div class="mini-list">
+            <div class="mini-item"><div><strong>1</strong><small>حدد السهم</small></div><span class="muted">Watchlist</span></div>
+            <div class="mini-item"><div><strong>2</strong><small>أدخل الفكرة</small></div><span class="muted">سبب واضح</span></div>
+            <div class="mini-item"><div><strong>3</strong><small>ثبت الوقف</small></div><span class="muted">Risk</span></div>
+            <div class="mini-item"><div><strong>4</strong><small>حدد الهدف</small></div><span class="muted">Target</span></div>
+          </div>
+        </div>
+      </aside>
+      <main class="main">
+        <div class="card">
+          <div class="toolbar">
+            <div><h2 style="margin-bottom:6px">بطاقات التوصيات</h2><div class="muted">عرض سريع وواضح لكل سهم في قائمتك</div></div>
+            <div class="toolbar-right"><span class="chip">جاهز للربط مع API لاحقًا</span><span class="chip">يحفظ البيانات محليًا</span></div>
+          </div>
+          <div id="cardsGrid" class="cards-grid"></div>
+        </div>
+        <div class="table-wrap">
+          <div class="toolbar">
+            <div><h2 style="margin:0 0 6px">الجدول التنفيذي</h2><div class="muted">مفيد للمراجعة السريعة قبل الدخول أو الخروج</div></div>
+          </div>
+          <div style="overflow:auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>الرمز</th><th>الشركة</th><th>السوق</th><th>الحالة</th><th>السعر الحالي</th><th>الدخول</th><th>الهدف</th><th>وقف الخسارة</th><th>R/R</th><th>آخر تحديث</th><th>إجراء</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </section>
+  </div>
+  <div class="modal" id="modal">
+    <div class="modal-box">
+      <div class="row-between">
+        <div><h2 style="margin:0 0 6px">إضافة أو تعديل توصية</h2><div class="muted">أدخل بياناتك يدويًا الآن، ثم نقدر لاحقًا نربطها بأسعار مباشرة</div></div>
+        <button class="ghost" id="closeModalBtn">إغلاق</button>
+      </div>
+      <form id="stockForm" class="modal-grid">
+        <input type="hidden" id="editingId" />
+        <input class="field" id="symbol" placeholder="الرمز مثل AAPL أو 2222" required />
+        <input class="field" id="company" placeholder="اسم الشركة" required />
+        <select class="select" id="market"><option value="US">السوق الأمريكي</option><option value="SA">السوق السعودي</option></select>
+        <select class="select" id="status"><option>مراقبة</option><option>دخول محتمل</option><option>دخول مؤكد</option><option>خروج / جني ربح</option></select>
+        <input class="field" id="price" type="number" step="0.01" placeholder="السعر الحالي" required />
+        <input class="field" id="entry" type="number" step="0.01" placeholder="سعر الدخول" required />
+        <input class="field" id="target" type="number" step="0.01" placeholder="الهدف" required />
+        <input class="field" id="stop" type="number" step="0.01" placeholder="وقف الخسارة" required />
+        <input class="field" id="change" type="number" step="0.01" placeholder="التغير اليومي % مثل 2.8 أو -1.4" />
+        <input class="field" id="confidence" type="number" min="1" max="100" step="1" placeholder="الثقة %" />
+        <textarea class="field full" id="reason" rows="4" placeholder="سبب التوصية: اختراق، حجم، ترند، خبر، دعم..." required></textarea>
+        <button class="primary full" type="submit">حفظ التوصية</button>
+      </form>
+      <div class="footer-note">البيانات تُحفظ داخل متصفحك عبر Local Storage، لذلك هذه النسخة مناسبة كلوحة خاصة بك على جهازك.</div>
+    </div>
+  </div>
+  <script>
+    const sampleData = [
+      {id:1,symbol:'AAPL',company:'Apple Inc.',market:'US',status:'دخول محتمل',price:214.35,entry:213.8,target:221.0,stop:209.9,change:1.82,confidence:74,reason:'اتجاه صاعد على الإطار اليومي مع ثبات فوق منطقة دعم حديثة وعودة الزخم تدريجيًا.',updatedAt:new Date().toLocaleString('ar-SA')},
+      {id:2,symbol:'MSFT',company:'Microsoft',market:'US',status:'مراقبة',price:498.2,entry:501.0,target:515.0,stop:489.0,change:-0.64,confidence:61,reason:'السهم قريب من منطقة قرار مهمة، والدخول الأفضل بعد تأكيد اختراق مع حجم أعلى من المتوسط.',updatedAt:new Date().toLocaleString('ar-SA')},
+      {id:3,symbol:'2222',company:'أرامكو السعودية',market:'SA',status:'خروج / جني ربح',price:29.75,entry:29.1,target:30.2,stop:28.7,change:0.95,confidence:68,reason:'السهم اقترب من الهدف الأول، والأنسب متابعة السلوك السعري لتخفيف جزء من الكمية أو رفع الوقف.',updatedAt:new Date().toLocaleString('ar-SA')}
+    ];
+    const STORAGE_KEY = 'my_private_stock_dashboard_v1';
+    let stocks = loadStocks();
+    let activeFilter = 'all';
+    const cardsGrid = document.getElementById('cardsGrid');
+    const tableBody = document.getElementById('tableBody');
+    const modal = document.getElementById('modal');
+    const form = document.getElementById('stockForm');
+    const searchInput = document.getElementById('searchInput');
+    const marketFilter = document.getElementById('marketFilter');
+    document.getElementById('openModalBtn').addEventListener('click', () => openModal());
+    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+    document.getElementById('resetBtn').addEventListener('click', resetData);
+    document.getElementById('exportBtn').addEventListener('click', exportData);
+    searchInput.addEventListener('input', renderAll);
+    marketFilter.addEventListener('change', renderAll);
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.addEventListener('click', () => { document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); activeFilter = btn.dataset.filter; renderAll(); }));
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = document.getElementById('editingId').value;
+      const item = {
+        id: id ? Number(id) : Date.now(),
+        symbol: document.getElementById('symbol').value.trim().toUpperCase(),
+        company: document.getElementById('company').value.trim(),
+        market: document.getElementById('market').value,
+        status: document.getElementById('status').value,
+        price: Number(document.getElementById('price').value),
+        entry: Number(document.getElementById('entry').value),
+        target: Number(document.getElementById('target').value),
+        stop: Number(document.getElementById('stop').value),
+        change: Number(document.getElementById('change').value || 0),
+        confidence: Number(document.getElementById('confidence').value || 0),
+        reason: document.getElementById('reason').value.trim(),
+        updatedAt: new Date().toLocaleString('ar-SA')
+      };
+      if (item.stop >= item.entry) { alert('وقف الخسارة يجب أن يكون أقل من سعر الدخول في الصفقات الشرائية.'); return; }
+      if (item.target <= item.entry) { alert('الهدف يجب أن يكون أعلى من سعر الدخول في الصفقات الشرائية.'); return; }
+      const index = stocks.findIndex(s => s.id === item.id);
+      if (index >= 0) stocks[index] = item; else stocks.unshift(item);
+      saveStocks(); closeModal(); form.reset(); document.getElementById('editingId').value = ''; renderAll();
+    });
+    function loadStocks() { const raw = localStorage.getItem(STORAGE_KEY); if (!raw) return structuredClone(sampleData); try { return JSON.parse(raw); } catch { return structuredClone(sampleData); } }
+    function saveStocks() { localStorage.setItem(STORAGE_KEY, JSON.stringify(stocks)); }
+    function resetData() { if (!confirm('سيتم حذف التعديلات الحالية وإرجاع البيانات التجريبية.')) return; stocks = structuredClone(sampleData); saveStocks(); renderAll(); }
+    function exportData() { const blob = new Blob([JSON.stringify(stocks, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'stock-dashboard-data.json'; a.click(); URL.revokeObjectURL(url); }
+    function openModal(item = null) { modal.classList.add('show'); if (!item) { form.reset(); document.getElementById('editingId').value = ''; return; } document.getElementById('editingId').value = item.id; document.getElementById('symbol').value = item.symbol; document.getElementById('company').value = item.company; document.getElementById('market').value = item.market; document.getElementById('status').value = item.status; document.getElementById('price').value = item.price; document.getElementById('entry').value = item.entry; document.getElementById('target').value = item.target; document.getElementById('stop').value = item.stop; document.getElementById('change').value = item.change; document.getElementById('confidence').value = item.confidence; document.getElementById('reason').value = item.reason; }
+    function closeModal() { modal.classList.remove('show'); }
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+    function getFilteredStocks() { const q = searchInput.value.trim().toLowerCase(); const market = marketFilter.value; return stocks.filter(item => { const matchesFilter = activeFilter === 'all' || item.status === activeFilter; const matchesMarket = market === 'all' || item.market === market; const matchesSearch = !q || item.symbol.toLowerCase().includes(q) || item.company.toLowerCase().includes(q); return matchesFilter && matchesMarket && matchesSearch; }); }
+    function rr(entry, stop, target) { const risk = Math.abs(entry - stop); const reward = Math.abs(target - entry); return risk ? (reward / risk) : 0; }
+    function statusClass(status) { if (status === 'مراقبة') return 'watch'; if (status === 'دخول محتمل') return 'entry'; if (status === 'دخول مؤكد') return 'confirmed'; return 'exit'; }
+    function renderCards(data) {
+      cardsGrid.innerHTML = data.map(item => { const ratio = rr(item.entry, item.stop, item.target).toFixed(2); const upDown = item.change >= 0 ? 'up' : 'down'; const sign = item.change >= 0 ? '+' : ''; return `<article class="signal-card"><div class="signal-top"><div><div class="ticker">${item.symbol}</div><div class="company">${item.company}</div></div><div class="status ${statusClass(item.status)}">${item.status}</div></div><div class="price-row"><div><div class="price">${formatPrice(item.price)}</div><div class="company">${item.market === 'US' ? 'السوق الأمريكي' : 'السوق السعودي'}</div></div><div class="change ${upDown}">${sign}${item.change.toFixed(2)}%</div></div><div class="metrics"><div class="metric"><div class="k">الدخول</div><div class="v">${formatPrice(item.entry)}</div></div><div class="metric"><div class="k">الهدف</div><div class="v">${formatPrice(item.target)}</div></div><div class="metric"><div class="k">وقف الخسارة</div><div class="v">${formatPrice(item.stop)}</div></div></div><div class="reason">${item.reason}</div><div class="actions-row"><span class="chip">R/R: ${ratio}</span><span class="chip">الثقة: ${item.confidence || 0}%</span><span class="chip">تحديث: ${item.updatedAt}</span></div><div class="actions-row"><button class="ghost" onclick="editStock(${item.id})">تعديل</button><button class="ghost" onclick="deleteStock(${item.id})">حذف</button></div></article>`; }).join('');
+      if (!data.length) cardsGrid.innerHTML = '<div class="card" style="padding:22px"><div class="muted">لا توجد نتائج مطابقة للفلاتر الحالية.</div></div>';
+    }
+    function renderTable(data) { tableBody.innerHTML = data.map(item => `<tr><td><strong>${item.symbol}</strong></td><td>${item.company}</td><td>${item.market}</td><td><span class="status ${statusClass(item.status)}">${item.status}</span></td><td>${formatPrice(item.price)}</td><td>${formatPrice(item.entry)}</td><td>${formatPrice(item.target)}</td><td>${formatPrice(item.stop)}</td><td>${rr(item.entry, item.stop, item.target).toFixed(2)}</td><td>${item.updatedAt}</td><td><button class="ghost" onclick="editStock(${item.id})">تعديل</button></td></tr>`).join(''); }
+    function formatPrice(value) { return Number(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+    function updateStats(data) { document.getElementById('statTotal').textContent = data.length; document.getElementById('statEntry').textContent = data.filter(i => i.status === 'دخول محتمل' || i.status === 'دخول مؤكد').length; const avg = data.length ? (data.reduce((sum, i) => sum + rr(i.entry, i.stop, i.target), 0) / data.length).toFixed(2) : '0.0'; document.getElementById('statRR').textContent = avg; document.getElementById('statUpdated').textContent = data.length ? data[0].updatedAt : '--'; }
+    function renderAll() { const data = getFilteredStocks(); renderCards(data); renderTable(data); updateStats(data); }
+    window.editStock = function(id) { const item = stocks.find(s => s.id === id); if (item) openModal(item); }
+    window.deleteStock = function(id) { const item = stocks.find(s => s.id === id); if (!item) return; if (!confirm(`حذف ${item.symbol} من اللوحة؟`)) return; stocks = stocks.filter(s => s.id !== id); saveStocks(); renderAll(); }
+    renderAll();
+  </script>
+</body>
+</html>
