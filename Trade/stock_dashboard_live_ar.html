@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة توصيات الأسهم المباشرة</title>
+  <style>
+    :root{
+      --bg:#08101f;--bg2:#101936;--panel:rgba(16,25,54,.86);--line:rgba(255,255,255,.08);
+      --text:#eef3ff;--muted:#98a6cb;--green:#20c67a;--red:#ff647d;--amber:#ffbb55;--blue:#5fa3ff;
+      --shadow:0 18px 40px rgba(0,0,0,.28);--radius:22px;
+    }
+    *{box-sizing:border-box} body{margin:0;font-family:"Segoe UI",Tahoma,Arial,sans-serif;color:var(--text);
+      background:radial-gradient(circle at top right, rgba(95,163,255,.18), transparent 26%),radial-gradient(circle at left bottom, rgba(111,96,255,.15), transparent 20%),linear-gradient(180deg,var(--bg),var(--bg2));min-height:100vh}
+    .shell{width:min(1380px,calc(100% - 28px));margin:20px auto 36px}
+    .hero,.layout{display:grid;gap:18px}.hero{grid-template-columns:1.3fr .9fr;margin-bottom:18px}.layout{grid-template-columns:340px 1fr}
+    .panel,.hero-card,.table-wrap,.modal-box{background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .hero-card{padding:26px;position:relative;overflow:hidden}.hero-card:after{content:"";position:absolute;width:220px;height:220px;left:-70px;top:-70px;background:radial-gradient(circle, rgba(95,163,255,.14), transparent 70%)}
+    h1{margin:0 0 8px;font-size:clamp(28px,3.2vw,40px)} h2{margin:0 0 12px;font-size:18px} p{margin:0;color:var(--muted);line-height:1.8}
+    .title-row,.toolbar,.row-between{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+    .live-pill{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:rgba(32,198,122,.12);border:1px solid rgba(32,198,122,.18);font-size:13px;color:#c6f9df}
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 5px rgba(32,198,122,.14);animation:pulse 1.8s infinite}@keyframes pulse{0%{transform:scale(1)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+    .actions,.toolbar-right,.actions-row{display:flex;gap:10px;flex-wrap:wrap}.actions{margin-top:20px}
+    button,.btn,input,select,textarea{font:inherit}
+    button,.btn{border:0;cursor:pointer;border-radius:16px;padding:13px 16px;transition:.18s ease}
+    .primary{background:linear-gradient(135deg,var(--blue),#7a89ff);color:white;box-shadow:0 10px 26px rgba(95,163,255,.24)} .ghost{background:rgba(255,255,255,.05);color:var(--text);border:1px solid var(--line)}
+    .primary:hover,.ghost:hover{transform:translateY(-1px)}
+    .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.stat{padding:18px;border-radius:20px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02))}
+    .stat .label{color:var(--muted);font-size:13px;margin-bottom:10px}.stat .value{font-size:28px;font-weight:800;margin-bottom:6px}.stat .sub{font-size:13px;color:var(--muted)}
+    .panel{padding:18px}.stack,.filters,.cards{display:grid;gap:12px}.filters button{text-align:right}
+    .field,.select,.search,.textarea{width:100%;border-radius:14px;padding:13px 14px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);outline:none}.field::placeholder,.search::placeholder,.textarea::placeholder{color:#8f9cc0}
+    .mini-note{padding:12px 14px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);line-height:1.8;font-size:13px}
+    .cards{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+    .card{padding:18px;border-radius:22px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.025));position:relative;overflow:hidden}
+    .card:before{content:"";position:absolute;right:-50px;bottom:-50px;width:150px;height:150px;background:radial-gradient(circle, rgba(255,255,255,.06), transparent 70%)}
+    .ticker{font-size:25px;font-weight:800}.company{color:var(--muted);font-size:13px;margin-top:4px}
+    .status{padding:8px 12px;border-radius:999px;font-size:12px;font-weight:800;white-space:nowrap}.watch{background:rgba(255,187,85,.14);color:#ffd89c}.entry{background:rgba(32,198,122,.14);color:#bcf7d7}.confirmed{background:rgba(95,163,255,.15);color:#d5e8ff}.exit{background:rgba(255,100,125,.13);color:#ffc5cf}
+    .price-row{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:16px 0}.price{font-size:30px;font-weight:800}.change{padding:8px 10px;border-radius:12px;font-size:14px;font-weight:800}.up{background:rgba(32,198,122,.14);color:#bdf7d8}.down{background:rgba(255,100,125,.12);color:#ffc1cb}
+    .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{padding:10px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.04)}.metric .k{font-size:12px;color:var(--muted);margin-bottom:6px}.metric .v{font-size:15px;font-weight:700}
+    .reason{margin-top:14px;line-height:1.8;color:#dce5ff;font-size:14px;min-height:58px}.chip{padding:9px 11px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.04);font-size:12px;color:var(--muted)}
+    .table-wrap{padding:12px} table{width:100%;border-collapse:collapse} th,td{padding:14px 12px;text-align:right;border-bottom:1px solid var(--line);font-size:14px} th{color:var(--muted);font-weight:600;background:rgba(255,255,255,.03)} tr:hover td{background:rgba(255,255,255,.03)}
+    .modal{position:fixed;inset:0;background:rgba(2,7,20,.65);display:none;place-items:center;padding:16px;z-index:30}.modal.show{display:grid}.modal-box{width:min(760px,100%);padding:20px}.modal-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}.full{grid-column:1 / -1}
+    .muted{color:var(--muted);font-size:13px}.ok{color:#bcf7d7}.warn{color:#ffd89c}.danger{color:#ffc1cb}
+    .provider{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.provider b{font-size:15px}
+    @media (max-width:1100px){.hero,.layout{grid-template-columns:1fr}} @media (max-width:700px){.stats,.metrics,.modal-grid{grid-template-columns:1fr}.shell{width:min(100% - 18px,1380px)}.hero-card,.panel{padding:16px}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div class="hero-card">
+        <div class="title-row">
+          <div>
+            <h1>لوحة توصيات الأسهم المباشرة</h1>
+            <p>نسخة مطورة من لوحتك، مع تحديث أسعار تلقائي، حفظ محلي، وقراءة بسيطة لحالة السهم مقارنة بالدخول والهدف ووقف الخسارة.</p>
+          </div>
+          <div class="live-pill"><span class="dot"></span> مزامنة تلقائية عند التفعيل</div>
+        </div>
+        <div class="actions">
+          <button class="primary" id="syncNowBtn">مزامنة الآن</button>
+          <button class="ghost" id="openModalBtn">+ إضافة سهم</button>
+          <button class="ghost" id="resetBtn">إعادة البيانات التجريبية</button>
+          <button class="ghost" id="exportBtn">تصدير JSON</button>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="label">عدد الأسهم</div><div class="value" id="statTotal">0</div><div class="sub">قائمة المراقبة الحالية</div></div>
+        <div class="stat"><div class="label">آخر مزامنة</div><div class="value" id="statUpdated" style="font-size:20px">--</div><div class="sub">يتحدث بعد كل جلب بيانات</div></div>
+        <div class="stat"><div class="label">إشارات مفعلة</div><div class="value" id="statSignals">0</div><div class="sub">دخول محتمل أو مؤكد</div></div>
+        <div class="stat"><div class="label">متوسط R/R</div><div class="value" id="statRR">0.00</div><div class="sub">حسب خطتك المخزنة</div></div>
+      </div>
+    </section>
+
+    <section class="layout">
+      <aside class="panel stack">
+        <div>
+          <h2>إعداد المزود</h2>
+          <div class="stack">
+            <div class="provider"><span class="chip">Provider</span><b>Alpha Vantage</b></div>
+            <input id="apiKeyInput" class="field" placeholder="ألصق API Key هنا" />
+            <select id="refreshSelect" class="select">
+              <option value="0">بدون تحديث تلقائي</option>
+              <option value="1">كل 1 دقيقة</option>
+              <option value="5" selected>كل 5 دقائق</option>
+              <option value="15">كل 15 دقيقة</option>
+            </select>
+            <button class="primary" id="saveSettingsBtn">حفظ الإعدادات</button>
+            <div class="mini-note">المفتاح يُحفَظ محليًا داخل متصفحك فقط. هذه النسخة تجلب بيانات يومية وأسبوعية، وتقدر تطورها لاحقًا إلى intraday أو backend آمن.</div>
+          </div>
+        </div>
+
+        <div>
+          <h2>بحث وفلترة</h2>
+          <div class="stack">
+            <input id="searchInput" class="search" placeholder="ابحث بالرمز أو اسم الشركة" />
+            <select id="marketFilter" class="select">
+              <option value="all">كل الأسواق</option>
+              <option value="US">السوق الأمريكي</option>
+              <option value="SA">السوق السعودي</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <h2>الحالة</h2>
+          <div class="filters">
+            <button class="ghost filter active" data-filter="all">الكل</button>
+            <button class="ghost filter" data-filter="مراقبة">مراقبة</button>
+            <button class="ghost filter" data-filter="دخول محتمل">دخول محتمل</button>
+            <button class="ghost filter" data-filter="دخول مؤكد">دخول مؤكد</button>
+            <button class="ghost filter" data-filter="خروج / جني ربح">خروج / جني ربح</button>
+            <button class="ghost filter" data-filter="وقف/خروج">وقف/خروج</button>
+          </div>
+        </div>
+
+        <div>
+          <h2>حالة النظام</h2>
+          <div class="mini-note" id="systemStatus">جاهز. احفظ مفتاح API ثم اضغط مزامنة الآن.</div>
+        </div>
+      </aside>
+
+      <main class="stack">
+        <div class="panel">
+          <div class="toolbar">
+            <div>
+              <h2>بطاقات المتابعة</h2>
+              <div class="muted">الأسعار تُحدَّث من المزود، بينما الأهداف والوقف والخطة من إدخالك أنت.</div>
+            </div>
+            <div class="toolbar-right">
+              <span class="chip">سعر مباشر نسبيًا حسب المزود</span>
+              <span class="chip">توصية آلية مبنية على قواعدك</span>
+            </div>
+          </div>
+          <div id="cards" class="cards"></div>
+        </div>
+
+        <div class="table-wrap">
+          <div class="toolbar">
+            <div><h2 style="margin:0 0 6px">الجدول التنفيذي</h2><div class="muted">يعرض الحالة الحالية بعد المزامنة مباشرة</div></div>
+          </div>
+          <div style="overflow:auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>الرمز</th><th>الشركة</th><th>السوق</th><th>السعر</th><th>اليومي %</th><th>الأسبوعي %</th><th>الدخول</th><th>الهدف</th><th>الوقف</th><th>الحالة</th><th>آخر تحديث</th><th>إجراء</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </section>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="modal-box">
+      <div class="row-between">
+        <div><h2 style="margin:0 0 6px">إضافة أو تعديل سهم</h2><div class="muted">أدخل خطتك، وستقوم الصفحة بتحديث السعر والقراءة تلقائيًا عند المزامنة.</div></div>
+        <button class="ghost" id="closeModalBtn">إغلاق</button>
+      </div>
+      <form id="stockForm" class="modal-grid">
+        <input type="hidden" id="editingId" />
+        <input id="symbol" class="field" placeholder="AAPL أو 2222" required />
+        <input id="company" class="field" placeholder="اسم الشركة" required />
+        <select id="market" class="select"><option value="US">السوق الأمريكي</option><option value="SA">السوق السعودي</option></select>
+        <input id="apiSymbol" class="field" placeholder="رمز API مثل AAPL أو 2222.SR" required />
+        <input id="entry" class="field" type="number" step="0.01" placeholder="سعر الدخول" required />
+        <input id="target" class="field" type="number" step="0.01" placeholder="الهدف" required />
+        <input id="stop" class="field" type="number" step="0.01" placeholder="وقف الخسارة" required />
+        <input id="confidence" class="field" type="number" min="1" max="100" placeholder="الثقة %" />
+        <textarea id="reason" class="textarea full" rows="4" placeholder="سبب الفكرة: اختراق، زخم، دعم، خبر، ترند..." required></textarea>
+        <button class="primary full" type="submit">حفظ السهم</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'stock_dashboard_live_v1';
+    const SETTINGS_KEY = 'stock_dashboard_live_settings_v1';
+    let activeFilter = 'all';
+    let refreshTimer = null;
+
+    const sampleData = [
+      {id:1,symbol:'AAPL',company:'Apple Inc.',market:'US',apiSymbol:'AAPL',entry:213.8,target:221,stop:209.9,confidence:74,reason:'اختراق محتمل فوق منطقة متابعة يومية مع زخم جيد.',price:null,dailyChange:null,weeklyChange:null,status:'مراقبة',updatedAt:'--'},
+      {id:2,symbol:'MSFT',company:'Microsoft',market:'US',apiSymbol:'MSFT',entry:501,target:515,stop:489,confidence:61,reason:'أفضلية بعد عودة السعر فوق منطقة القرار مع استمرار الاتجاه.',price:null,dailyChange:null,weeklyChange:null,status:'مراقبة',updatedAt:'--'},
+      {id:3,symbol:'2222',company:'أرامكو السعودية',market:'SA',apiSymbol:'2222.SR',entry:29.1,target:30.2,stop:28.7,confidence:68,reason:'خطة متابعة أسبوعية مع هدف قريب وإدارة مخاطرة واضحة.',price:null,dailyChange:null,weeklyChange:null,status:'مراقبة',updatedAt:'--'}
+    ];
+
+    let stocks = loadStocks();
+    let settings = loadSettings();
+
+    const cards = document.getElementById('cards');
+    const tableBody = document.getElementById('tableBody');
+    const searchInput = document.getElementById('searchInput');
+    const marketFilter = document.getElementById('marketFilter');
+    const apiKeyInput = document.getElementById('apiKeyInput');
+    const refreshSelect = document.getElementById('refreshSelect');
+    const statusBox = document.getElementById('systemStatus');
+    const modal = document.getElementById('modal');
+    const form = document.getElementById('stockForm');
+
+    apiKeyInput.value = settings.apiKey || '';
+    refreshSelect.value = String(settings.refreshMin ?? 5);
+
+    document.getElementById('openModalBtn').addEventListener('click', () => openModal());
+    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+    document.getElementById('resetBtn').addEventListener('click', resetData);
+    document.getElementById('exportBtn').addEventListener('click', exportData);
+    document.getElementById('saveSettingsBtn').addEventListener('click', saveSettingsFromUI);
+    document.getElementById('syncNowBtn').addEventListener('click', syncAll);
+    searchInput.addEventListener('input', renderAll);
+    marketFilter.addEventListener('change', renderAll);
+
+    document.querySelectorAll('.filter').forEach(btn => btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.filter;
+      renderAll();
+    }));
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const id = document.getElementById('editingId').value;
+      const item = {
+        id: id ? Number(id) : Date.now(),
+        symbol: document.getElementById('symbol').value.trim().toUpperCase(),
+        company: document.getElementById('company').value.trim(),
+        market: document.getElementById('market').value,
+        apiSymbol: document.getElementById('apiSymbol').value.trim().toUpperCase(),
+        entry: Number(document.getElementById('entry').value),
+        target: Number(document.getElementById('target').value),
+        stop: Number(document.getElementById('stop').value),
+        confidence: Number(document.getElementById('confidence').value || 0),
+        reason: document.getElementById('reason').value.trim(),
+        price: null,
+        dailyChange: null,
+        weeklyChange: null,
+        status: 'مراقبة',
+        updatedAt: '--'
+      };
+      if (item.stop >= item.entry) return alert('وقف الخسارة يجب أن يكون أقل من الدخول.');
+      if (item.target <= item.entry) return alert('الهدف يجب أن يكون أعلى من الدخول.');
+      const i = stocks.findIndex(s => s.id === item.id);
+      if (i >= 0) stocks[i] = {...stocks[i], ...item}; else stocks.unshift(item);
+      saveStocks(); closeModal(); form.reset(); document.getElementById('editingId').value=''; renderAll();
+    });
+
+    function loadStocks(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || structuredClone(sampleData); }catch{ return structuredClone(sampleData); } }
+    function saveStocks(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(stocks)); }
+    function loadSettings(){ try{ return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {apiKey:'',refreshMin:5}; }catch{ return {apiKey:'',refreshMin:5}; } }
+    function saveSettings(){ localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }
+
+    function saveSettingsFromUI(){
+      settings.apiKey = apiKeyInput.value.trim();
+      settings.refreshMin = Number(refreshSelect.value);
+      saveSettings();
+      setupAutoRefresh();
+      setStatus('تم حفظ الإعدادات محليًا.', 'ok');
+    }
+
+    function setupAutoRefresh(){
+      if (refreshTimer) clearInterval(refreshTimer);
+      if (!settings.refreshMin) return;
+      refreshTimer = setInterval(syncAll, settings.refreshMin * 60 * 1000);
+    }
+
+    function resetData(){
+      if (!confirm('سيتم حذف البيانات الحالية وإرجاع البيانات التجريبية.')) return;
+      stocks = structuredClone(sampleData);
+      saveStocks(); renderAll(); setStatus('تمت إعادة البيانات التجريبية.', 'warn');
+    }
+
+    function exportData(){
+      const blob = new Blob([JSON.stringify({settings:{refreshMin:settings.refreshMin},stocks}, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob); const a = document.createElement('a');
+      a.href = url; a.download = 'stock-dashboard-live-data.json'; a.click(); URL.revokeObjectURL(url);
+    }
+
+    function openModal(item=null){
+      modal.classList.add('show');
+      if(!item){ form.reset(); document.getElementById('editingId').value=''; return; }
+      document.getElementById('editingId').value=item.id;
+      document.getElementById('symbol').value=item.symbol;
+      document.getElementById('company').value=item.company;
+      document.getElementById('market').value=item.market;
+      document.getElementById('apiSymbol').value=item.apiSymbol;
+      document.getElementById('entry').value=item.entry;
+      document.getElementById('target').value=item.target;
+      document.getElementById('stop').value=item.stop;
+      document.getElementById('confidence').value=item.confidence || '';
+      document.getElementById('reason').value=item.reason;
+    }
+    function closeModal(){ modal.classList.remove('show'); }
+    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+    function rr(entry, stop, target){ const risk=Math.abs(entry-stop), reward=Math.abs(target-entry); return risk ? reward/risk : 0; }
+    function formatPrice(v){ return v==null || Number.isNaN(v) ? '--' : Number(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+    function formatPct(v){ return v==null || Number.isNaN(v) ? '--' : `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`; }
+    function statusClass(s){ if(s==='مراقبة') return 'watch'; if(s==='دخول محتمل') return 'entry'; if(s==='دخول مؤكد') return 'confirmed'; return 'exit'; }
+
+    function evaluateStatus(item){
+      if (item.price == null) return 'مراقبة';
+      if (item.price <= item.stop) return 'وقف/خروج';
+      if (item.price >= item.target) return 'خروج / جني ربح';
+      const closeToEntry = item.price >= item.entry * 0.995 && item.price <= item.entry * 1.01;
+      const trendUp = (item.dailyChange ?? -999) > 0 && (item.weeklyChange ?? -999) > 0;
+      if (item.price > item.entry && trendUp) return 'دخول مؤكد';
+      if (closeToEntry || (item.price > item.entry && (item.dailyChange ?? 0) > 0)) return 'دخول محتمل';
+      return 'مراقبة';
+    }
+
+    function getFilteredStocks(){
+      const q = searchInput.value.trim().toLowerCase();
+      const market = marketFilter.value;
+      return stocks.filter(item => {
+        const f = activeFilter === 'all' || item.status === activeFilter;
+        const m = market === 'all' || item.market === market;
+        const s = !q || item.symbol.toLowerCase().includes(q) || item.company.toLowerCase().includes(q);
+        return f && m && s;
+      });
+    }
+
+    function renderCards(data){
+      cards.innerHTML = data.map(item => `
+        <article class="card">
+          <div class="row-between">
+            <div><div class="ticker">${item.symbol}</div><div class="company">${item.company}</div></div>
+            <div class="status ${statusClass(item.status)}">${item.status}</div>
+          </div>
+          <div class="price-row">
+            <div><div class="price">${formatPrice(item.price)}</div><div class="company">${item.market === 'US' ? 'السوق الأمريكي' : 'السوق السعودي'} · API: ${item.apiSymbol}</div></div>
+            <div class="change ${(item.dailyChange ?? 0) >= 0 ? 'up' : 'down'}">${formatPct(item.dailyChange)}</div>
+          </div>
+          <div class="metrics">
+            <div class="metric"><div class="k">الدخول</div><div class="v">${formatPrice(item.entry)}</div></div>
+            <div class="metric"><div class="k">الهدف</div><div class="v">${formatPrice(item.target)}</div></div>
+            <div class="metric"><div class="k">الوقف</div><div class="v">${formatPrice(item.stop)}</div></div>
+          </div>
+          <div class="reason">${item.reason}</div>
+          <div class="actions-row">
+            <span class="chip">أسبوعي: ${formatPct(item.weeklyChange)}</span>
+            <span class="chip">R/R: ${rr(item.entry,item.stop,item.target).toFixed(2)}</span>
+            <span class="chip">ثقة: ${item.confidence || 0}%</span>
+          </div>
+          <div class="actions-row">
+            <span class="chip">تحديث: ${item.updatedAt || '--'}</span>
+            <button class="ghost" onclick="editStock(${item.id})">تعديل</button>
+            <button class="ghost" onclick="deleteStock(${item.id})">حذف</button>
+          </div>
+        </article>`).join('');
+      if(!data.length) cards.innerHTML = '<div class="panel"><div class="muted">لا توجد نتائج مطابقة.</div></div>';
+    }
+
+    function renderTable(data){
+      tableBody.innerHTML = data.map(item => `
+        <tr>
+          <td><strong>${item.symbol}</strong></td><td>${item.company}</td><td>${item.market}</td><td>${formatPrice(item.price)}</td><td>${formatPct(item.dailyChange)}</td><td>${formatPct(item.weeklyChange)}</td><td>${formatPrice(item.entry)}</td><td>${formatPrice(item.target)}</td><td>${formatPrice(item.stop)}</td><td><span class="status ${statusClass(item.status)}">${item.status}</span></td><td>${item.updatedAt || '--'}</td><td><button class="ghost" onclick="editStock(${item.id})">تعديل</button></td>
+        </tr>`).join('');
+    }
+
+    function updateStats(data){
+      document.getElementById('statTotal').textContent = data.length;
+      document.getElementById('statSignals').textContent = data.filter(i => i.status === 'دخول محتمل' || i.status === 'دخول مؤكد').length;
+      document.getElementById('statRR').textContent = data.length ? (data.reduce((a,b)=>a+rr(b.entry,b.stop,b.target),0)/data.length).toFixed(2) : '0.00';
+      document.getElementById('statUpdated').textContent = data.find(i => i.updatedAt && i.updatedAt !== '--')?.updatedAt || '--';
+    }
+
+    function renderAll(){ const data = getFilteredStocks(); renderCards(data); renderTable(data); updateStats(data); }
+
+    function setStatus(msg, tone='ok'){
+      statusBox.className = 'mini-note ' + tone;
+      statusBox.textContent = msg;
+    }
+
+    async function fetchDaily(apiKey, symbol){
+      const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${encodeURIComponent(symbol)}&outputsize=compact&apikey=${encodeURIComponent(apiKey)}`;
+      const r = await fetch(url); const data = await r.json();
+      if (data['Error Message']) throw new Error(`رمز غير مدعوم: ${symbol}`);
+      if (data['Note']) throw new Error('المزود رفض الطلب مؤقتًا؛ غالبًا كثرة طلبات أو limit.');
+      const ts = data['Time Series (Daily)'];
+      if (!ts) throw new Error(`لا توجد بيانات يومية لـ ${symbol}`);
+      const dates = Object.keys(ts).sort((a,b)=>b.localeCompare(a));
+      const d0 = ts[dates[0]], d1 = ts[dates[1]];
+      const close0 = Number(d0['4. close']);
+      const close1 = Number(d1['4. close']);
+      const dailyChange = close1 ? ((close0 - close1) / close1) * 100 : null;
+      return { price: close0, dailyChange };
+    }
+
+    async function fetchWeekly(apiKey, symbol){
+      const url = `https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol=${encodeURIComponent(symbol)}&apikey=${encodeURIComponent(apiKey)}`;
+      const r = await fetch(url); const data = await r.json();
+      if (data['Error Message']) throw new Error(`خطأ أسبوعي في ${symbol}`);
+      if (data['Note']) throw new Error('المزود رفض الطلب مؤقتًا؛ خفف عدد الأسهم أو زِد الفاصل الزمني.');
+      const ts = data['Weekly Time Series'];
+      if (!ts) return { weeklyChange: null };
+      const dates = Object.keys(ts).sort((a,b)=>b.localeCompare(a));
+      const w0 = Number(ts[dates[0]]['4. close']);
+      const w1 = Number(ts[dates[1]]['4. close']);
+      return { weeklyChange: w1 ? ((w0 - w1)/w1)*100 : null };
+    }
+
+    async function syncAll(){
+      const apiKey = settings.apiKey?.trim();
+      if(!apiKey){ setStatus('أدخل API Key أولًا ثم احفظ الإعدادات.', 'danger'); return; }
+      if(!stocks.length){ setStatus('لا توجد أسهم للمزامنة.', 'warn'); return; }
+      setStatus('جاري المزامنة...', 'warn');
+      for(let i=0;i<stocks.length;i++){
+        const item = stocks[i];
+        try{
+          const daily = await fetchDaily(apiKey, item.apiSymbol);
+          const weekly = await fetchWeekly(apiKey, item.apiSymbol);
+          stocks[i] = { ...item, ...daily, ...weekly, updatedAt: new Date().toLocaleString('ar-SA') };
+          stocks[i].status = evaluateStatus(stocks[i]);
+          saveStocks(); renderAll();
+        }catch(err){
+          stocks[i].updatedAt = 'خطأ';
+          saveStocks(); renderAll();
+          setStatus(`تعذر تحديث ${item.symbol}: ${err.message}`, 'danger');
+          return;
+        }
+      }
+      saveStocks(); renderAll();
+      setStatus('تمت المزامنة بنجاح.', 'ok');
+    }
+
+    window.editStock = id => { const item = stocks.find(s => s.id === id); if(item) openModal(item); }
+    window.deleteStock = id => { const item = stocks.find(s => s.id === id); if(!item) return; if(!confirm(`حذف ${item.symbol}؟`)) return; stocks = stocks.filter(s => s.id !== id); saveStocks(); renderAll(); }
+
+    setupAutoRefresh();
+    renderAll();
+  </script>
+</body>
+</html>
